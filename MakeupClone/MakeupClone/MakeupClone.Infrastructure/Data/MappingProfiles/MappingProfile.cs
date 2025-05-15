@@ -2,16 +2,15 @@
 using MakeupClone.Domain.Entities;
 using MakeupClone.Infrastructure.Data.Entities;
 
-namespace MakeupClone.Infrastructure.Data.MappingProfiles
+namespace MakeupClone.Infrastructure.Data.MappingProfiles;
+
+public class MappingProfile : Profile
 {
-    public class MappingProfile : Profile
+    public MappingProfile()
     {
-        public MappingProfile()
-        {
-            CreateMap<Product, ProductEntity>().ReverseMap();
-            CreateMap<Category, CategoryEntity>().ReverseMap();
-            CreateMap<Brand, BrandEntity>().ReverseMap();
-            CreateMap<Review, ReviewEntity>().ReverseMap();
-        }
+        CreateMap<Product, ProductEntity>().ReverseMap();
+        CreateMap<Category, CategoryEntity>().ReverseMap();
+        CreateMap<Brand, BrandEntity>().ReverseMap();
+        CreateMap<Review, ReviewEntity>().ReverseMap();
     }
 }

@@ -1,17 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿namespace MakeupClone.Infrastructure.Data.Entities;
 
-namespace MakeupClone.Infrastructure.Data.Entities
+public class CategoryEntity
 {
-    [Table("Categories")]
-    public class CategoryEntity
-    {
-        [Key]
-        public Guid Id { get; set; }
+    public Guid Id { get; set; }
 
-        [Required]
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public ICollection<ProductEntity> Products { get; set; }
-    }
+    public ICollection<ProductEntity> Products { get; set; }
 }

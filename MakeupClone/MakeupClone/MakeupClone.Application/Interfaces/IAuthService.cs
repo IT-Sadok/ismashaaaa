@@ -1,13 +1,12 @@
 ﻿using MakeupClone.Application.DTOs;
 
-namespace MakeupClone.Application.Interfaces
+namespace MakeupClone.Application.Interfaces;
+
+public interface IAuthService
 {
-    public interface IAuthService
-    {
-        Task<AuthResultDto> Register(RegisterDto registerDto);
+    Task<AuthResultDto> Register(RegisterDto registerDto, CancellationToken cancellationToken);
 
-        Task<AuthResultDto> Login(LoginDto loginDto);
+    Task<AuthResultDto> Login(LoginDto loginDto, CancellationToken cancellationToken);
 
-        Task<AuthResultDto> GoogleLogin(GoogleLoginDto gooleLoginDto);
-    }
+    Task<AuthResultDto> GoogleLogin(GoogleLoginDto gooleLoginDto, CancellationToken cancellationToken);
 }

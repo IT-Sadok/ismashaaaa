@@ -1,9 +1,6 @@
-﻿using System;
+﻿namespace MakeupClone.Domain.Interfaces;
 
-namespace MakeupClone.Domain.Interfaces
+public interface IJwtTokenGenerator
 {
-    public interface IJwtTokenGenerator
-    {
-        string GenerateToken(string userId, string email);
-    }
+    string GenerateToken(string userId, string email);
 }

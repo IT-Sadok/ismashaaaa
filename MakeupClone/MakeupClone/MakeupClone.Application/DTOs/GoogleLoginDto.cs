@@ -1,9 +1,6 @@
-﻿using System;
+﻿namespace MakeupClone.Application.DTOs;
 
-namespace MakeupClone.Application.DTOs
+public class GoogleLoginDto
 {
-    public class GoogleLoginDto
-    {
-        public string IdToken { get; set; }
-    }
+    public string IdToken { get; set; }
 }

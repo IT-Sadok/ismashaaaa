@@ -2,38 +2,37 @@
 using MakeupClone.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MakeupClone.API.Controllers
+namespace MakeupClone.API.Controllers;
+
+[ApiController]
+[Route("api/auth")]
+public class AuthController : ControllerBase
 {
-    [ApiController]
-    [Route("api/auth")]
-    public class AuthController : ControllerBase
+    private readonly IAuthService _authService;
+
+    public AuthController(IAuthService authService)
     {
-        private readonly IAuthService _authService;
+        _authService = authService;
+    }
 
-        public AuthController(IAuthService authService)
-        {
-            _authService = authService;
-        }
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+    {
+        var registerResult = await _authService.Register(registerDto, HttpContext.RequestAborted);
+        return registerResult.Success ? Ok(registerResult) : BadRequest(registerResult);
+    }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
-        {
-            var registerResult = await _authService.Register(registerDto);
-            return registerResult.Success ? Ok(registerResult) : BadRequest(registerResult);
-        }
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+    {
+        var loginResult = await _authService.Login(loginDto, HttpContext.RequestAborted);
+        return loginResult.Success ? Ok(loginResult) : Unauthorized(loginResult);
+    }
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
-        {
-            var loginResult = await _authService.Login(loginDto);
-            return loginResult.Success ? Ok(loginResult) : Unauthorized(loginResult);
-        }
-
-        [HttpPost("google-login")]
-        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDto googleLoginDto)
-        {
-            var googleLoginResult = await _authService.GoogleLogin(googleLoginDto);
-            return googleLoginResult.Success ? Ok(googleLoginResult) : BadRequest(googleLoginResult);
-        }
+    [HttpPost("google-login")]
+    public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDto googleLoginDto)
+    {
+        var googleLoginResult = await _authService.GoogleLogin(googleLoginDto, HttpContext.RequestAborted);
+        return googleLoginResult.Success ? Ok(googleLoginResult) : BadRequest(googleLoginResult);
     }
 }

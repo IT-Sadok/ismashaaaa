@@ -1,27 +1,28 @@
 ﻿using System;
 
-namespace MakeupClone.Domain.Entities
+namespace MakeupClone.Domain.Entities;
+
+public class Product
 {
-    public class Product
-    {
-        public Guid Id { get; set; }
+    public Guid Id { get; set; }
 
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public string Description { get; set; }
+    public string Description { get; set; }
 
-        public decimal Price { get; set; }
+    public decimal Price { get; set; }
 
-        public int StockQuantity { get; set; }
+    public int StockQuantity { get; set; }
 
-        public string ImageUrl { get; set; }
+    public string ImageUrl { get; set; }
 
-        public Guid CategoryId { get; set; }
+    public Guid CategoryId { get; set; }
 
-        public Category Category { get; set; }
+    public Category Category { get; set; }
 
-        public Guid BrandId { get; set; }
+    public Guid BrandId { get; set; }
 
-        public Brand Brand { get; set; }
-    }
+    public Brand Brand { get; set; }
+
+    public ICollection<Review> Reviews { get; set; }
 }
