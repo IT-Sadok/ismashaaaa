@@ -1,8 +1,7 @@
-using MakeupClone.API.Extensions;
 using MakeupClone.Application.Interfaces;
-using MakeupClone.Application.Services;
 using MakeupClone.Domain.Interfaces;
 using MakeupClone.Infrastructure.Data.MappingProfiles;
+using MakeupClone.Infrastructure.Extensions;
 using MakeupClone.Infrastructure.Secutiry;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,10 +14,12 @@ builder.Services
     .AddDatabase(builder.Configuration)
     .AddIdentityConfiguration()
     .AddAuthenticationConfiguration(builder.Configuration)
-    .AddCustomValidators();
+    .AddCustomValidators()
+    .AddRepositories()
+    .AddServices();
 
-builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+builder.Services.AddScoped<IGoogleJsonWebSignatureWrapper, GoogleJsonWebSignatureWrapper>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 

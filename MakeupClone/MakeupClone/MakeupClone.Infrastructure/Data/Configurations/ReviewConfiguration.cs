@@ -18,7 +18,7 @@ public class ReviewConfiguration : IEntityTypeConfiguration<ReviewEntity>
         builder.Property(review => review.UserId)
                .IsRequired();
 
-        builder.Property(review => review.Comment)
+        builder.Property(review => review.Content)
                .IsRequired();
 
         builder.Property(review => review.Rating)

@@ -4,9 +4,9 @@ namespace MakeupClone.Application.Interfaces;
 
 public interface IAuthService
 {
-    Task<AuthResultDto> Register(RegisterDto registerDto, CancellationToken cancellationToken);
+    Task<AuthResultDto> RegisterAsync(RegisterDto registerDto, CancellationToken cancellationToken = default);
 
-    Task<AuthResultDto> Login(LoginDto loginDto, CancellationToken cancellationToken);
+    Task<AuthResultDto> LoginAsync(LoginDto loginDto, CancellationToken cancellationToken = default);
 
-    Task<AuthResultDto> GoogleLogin(GoogleLoginDto gooleLoginDto, CancellationToken cancellationToken);
+    Task<AuthResultDto> GoogleLoginAsync(GoogleLoginDto gooleLoginDto, CancellationToken cancellationToken = default);
 }

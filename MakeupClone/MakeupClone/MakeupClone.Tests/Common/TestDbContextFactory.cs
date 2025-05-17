@@ -8,7 +8,7 @@ public static class TestDbContextFactory
     public static MakeupCloneDbContext CreateDbContext()
     {
         var options = new DbContextOptionsBuilder<MakeupCloneDbContext>()
-            .UseNpgsql("Host=localhost;Port=5433;Database=MakeupCloneTestDb;Username=userForTests;Password=hnYN7~8/1@_a")
+            .UseNpgsql(TestConfiguration.ConnectionString)
             .Options;
 
         var context = new MakeupCloneDbContext(options);

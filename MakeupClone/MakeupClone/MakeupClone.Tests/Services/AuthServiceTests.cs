@@ -80,7 +80,7 @@ public class AuthServiceTests : IAsyncLifetime
     {
         var registerDto = CreateRegisterDto(email: Guid.NewGuid() + "@example.com");
 
-        var result = await _authService.Register(registerDto, CancellationToken.None);
+        var result = await _authService.RegisterAsync(registerDto, CancellationToken.None);
 
         Assert.True(result.Success);
 
@@ -92,7 +92,7 @@ public class AuthServiceTests : IAsyncLifetime
     {
         var registerDto = CreateRegisterDto(email: "invalid-email");
 
-        var result = await _authService.Register(registerDto, CancellationToken.None);
+        var result = await _authService.RegisterAsync(registerDto, CancellationToken.None);
 
         Assert.False(result.Success);
         Assert.Contains("Invalid email format.", result.Errors);
@@ -103,7 +103,7 @@ public class AuthServiceTests : IAsyncLifetime
     {
         var registerDto = CreateRegisterDto(password: "123");
 
-        var result = await _authService.Register(registerDto, CancellationToken.None);
+        var result = await _authService.RegisterAsync(registerDto, CancellationToken.None);
 
         Assert.False(result.Success);
         Assert.Contains("Password must be at least 6 characters long.", result.Errors.FirstOrDefault());
@@ -114,7 +114,7 @@ public class AuthServiceTests : IAsyncLifetime
     {
         var registerDto = CreateRegisterDto(email: "existing@example.com");
 
-        var result = await _authService.Register(registerDto, CancellationToken.None);
+        var result = await _authService.RegisterAsync(registerDto, CancellationToken.None);
 
         Assert.False(result.Success);
         Assert.Contains("is already taken", result.Errors.FirstOrDefault() ?? " ");
@@ -125,7 +125,7 @@ public class AuthServiceTests : IAsyncLifetime
     {
         var registerDto = CreateRegisterDto(phoneNumber: "123abc");
 
-        var result = await _authService.Register(registerDto, CancellationToken.None);
+        var result = await _authService.RegisterAsync(registerDto, CancellationToken.None);
 
         Assert.False(result.Success);
         Assert.Contains("Invalid phone number format.", result.Errors);
@@ -136,7 +136,7 @@ public class AuthServiceTests : IAsyncLifetime
     {
         var registerDto = new RegisterDto();
 
-        var result = await _authService.Register(registerDto, CancellationToken.None);
+        var result = await _authService.RegisterAsync(registerDto, CancellationToken.None);
 
         Assert.False(result.Success);
         Assert.Contains("First name is required.", result.Errors);
@@ -150,7 +150,7 @@ public class AuthServiceTests : IAsyncLifetime
     {
         var loginDto = CreateLoginDto(email: "existing@example.com", password: "Test1234!");
 
-        var result = await _authService.Login(loginDto, CancellationToken.None);
+        var result = await _authService.LoginAsync(loginDto, CancellationToken.None);
 
         Assert.True(result.Success);
         Assert.False(string.IsNullOrWhiteSpace(result.Token));
@@ -161,7 +161,7 @@ public class AuthServiceTests : IAsyncLifetime
     {
         var loginDto = CreateLoginDto(email: "invalid-email");
 
-        var result = await _authService.Login(loginDto, CancellationToken.None);
+        var result = await _authService.LoginAsync(loginDto, CancellationToken.None);
 
         Assert.False(result.Success);
         Assert.Contains("Invalid email format.", result.Errors);
@@ -172,7 +172,7 @@ public class AuthServiceTests : IAsyncLifetime
     {
         var loginDto = CreateLoginDto(email: "existing@example.com", password: "WrongPass123!");
 
-        var result = await _authService.Login(loginDto, CancellationToken.None);
+        var result = await _authService.LoginAsync(loginDto, CancellationToken.None);
 
         Assert.False(result.Success);
         Assert.Contains("Invalid email or password", result.Errors.FirstOrDefault());
@@ -183,7 +183,7 @@ public class AuthServiceTests : IAsyncLifetime
     {
         var loginDto = new LoginDto();
 
-        var result = await _authService.Login(loginDto, CancellationToken.None);
+        var result = await _authService.LoginAsync(loginDto, CancellationToken.None);
 
         Assert.False(result.Success);
         Assert.Contains("Email is required.", result.Errors);
@@ -195,7 +195,7 @@ public class AuthServiceTests : IAsyncLifetime
     {
         var loginDto = CreateLoginDto(email: "notfound@example.com");
 
-        var result = await _authService.Login(loginDto, CancellationToken.None);
+        var result = await _authService.LoginAsync(loginDto, CancellationToken.None);
 
         Assert.False(result.Success);
         Assert.Contains("Invalid email or password", result.Errors.FirstOrDefault());
@@ -214,7 +214,7 @@ public class AuthServiceTests : IAsyncLifetime
 
         _googleJsonWebSignatureWrapper.Setup(wrapper => wrapper.Validate(googleLoginDto.IdToken, It.IsAny<CancellationToken>())).ReturnsAsync(payload);
 
-        var result = await _authService.GoogleLogin(googleLoginDto, CancellationToken.None);
+        var result = await _authService.GoogleLoginAsync(googleLoginDto, CancellationToken.None);
 
         Assert.True(result.Success);
         Assert.False(string.IsNullOrWhiteSpace(result.Token));
@@ -233,7 +233,7 @@ public class AuthServiceTests : IAsyncLifetime
 
         _googleJsonWebSignatureWrapper.Setup(wrapper => wrapper.Validate(googleLoginDto.IdToken, It.IsAny<CancellationToken>())).ReturnsAsync(payload);
 
-        var result = await _authService.GoogleLogin(googleLoginDto, CancellationToken.None);
+        var result = await _authService.GoogleLoginAsync(googleLoginDto, CancellationToken.None);
 
         Assert.True(result.Success);
         Assert.False(string.IsNullOrWhiteSpace(result.Token));

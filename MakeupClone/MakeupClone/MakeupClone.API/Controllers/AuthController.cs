@@ -18,21 +18,21 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
     {
-        var registerResult = await _authService.Register(registerDto, HttpContext.RequestAborted);
+        var registerResult = await _authService.RegisterAsync(registerDto, HttpContext.RequestAborted);
         return registerResult.Success ? Ok(registerResult) : BadRequest(registerResult);
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
     {
-        var loginResult = await _authService.Login(loginDto, HttpContext.RequestAborted);
+        var loginResult = await _authService.LoginAsync(loginDto, HttpContext.RequestAborted);
         return loginResult.Success ? Ok(loginResult) : Unauthorized(loginResult);
     }
 
     [HttpPost("google-login")]
     public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDto googleLoginDto)
     {
-        var googleLoginResult = await _authService.GoogleLogin(googleLoginDto, HttpContext.RequestAborted);
-        return googleLoginResult.Success ? Ok(googleLoginResult) : BadRequest(googleLoginResult);
+        var googleLoginResult = await _authService.GoogleLoginAsync(googleLoginDto, HttpContext.RequestAborted);
+        return googleLoginResult.Success ? Ok(googleLoginResult) : Unauthorized(googleLoginResult);
     }
 }

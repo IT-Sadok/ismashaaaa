@@ -29,9 +29,9 @@ public class AuthService : IAuthService
         _googleSignature = googleSignature;
     }
 
-    public async Task<AuthResultDto> Register(RegisterDto registerDto, CancellationToken cancellationToken)
+    public async Task<AuthResultDto> RegisterAsync(RegisterDto registerDto, CancellationToken cancellationToken = default)
     {
-        var validationResponse = await ValidateRequest(registerDto, _registrationValidator, cancellationToken);
+        var validationResponse = await ValidateRequestAsync(registerDto, _registrationValidator, cancellationToken);
         if (validationResponse != null) return validationResponse;
 
         var user = new User
@@ -60,9 +60,9 @@ public class AuthService : IAuthService
         return new AuthResultDto { Success = true, Token = token };
     }
 
-    public async Task<AuthResultDto> Login(LoginDto loginDto, CancellationToken cancellationToken)
+    public async Task<AuthResultDto> LoginAsync(LoginDto loginDto, CancellationToken cancellationToken = default)
     {
-        var validationResponse = await ValidateRequest(loginDto, _loginValidator, cancellationToken);
+        var validationResponse = await ValidateRequestAsync(loginDto, _loginValidator, cancellationToken);
         if (validationResponse != null) return validationResponse;
 
         var user = await _userManager.FindByEmailAsync(loginDto.Email);
@@ -73,7 +73,7 @@ public class AuthService : IAuthService
         return new AuthResultDto() { Success = true, Token = token };
     }
 
-    public async Task<AuthResultDto> GoogleLogin(GoogleLoginDto gooleLoginDto, CancellationToken cancellationToken)
+    public async Task<AuthResultDto> GoogleLoginAsync(GoogleLoginDto gooleLoginDto, CancellationToken cancellationToken = default)
     {
         var payload = await _googleSignature.Validate(gooleLoginDto.IdToken);
         var user = await _userManager.FindByEmailAsync(payload.Email);
@@ -101,7 +101,7 @@ public class AuthService : IAuthService
         return new AuthResultDto() { Success = true, Token = token };
     }
 
-    private static async Task<AuthResultDto> ValidateRequest<T>(T request, IValidator<T> validator, CancellationToken cancellationToken)
+    private static async Task<AuthResultDto> ValidateRequestAsync<T>(T request, IValidator<T> validator, CancellationToken cancellationToken)
     {
         var validationResponse = await validator.ValidateAsync(request, cancellationToken);
         if (!validationResponse.IsValid)

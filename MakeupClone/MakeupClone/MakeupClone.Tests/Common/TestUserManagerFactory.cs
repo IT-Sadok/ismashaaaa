@@ -38,7 +38,7 @@ public static class TestServiceProviderFactory
     private static void AddDatabase(IServiceCollection services)
     {
         services.AddDbContext<MakeupCloneDbContext>(options =>
-            options.UseNpgsql("Host=localhost;Port=5433;Database=MakeupCloneTestDb;Username=userForTests;Password=hnYN7~8/1@_a"));
+            options.UseNpgsql(TestConfiguration.ConnectionString));
 
         services.AddLogging();
     }

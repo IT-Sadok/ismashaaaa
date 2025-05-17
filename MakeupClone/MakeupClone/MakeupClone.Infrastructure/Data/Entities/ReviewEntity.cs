@@ -14,7 +14,7 @@ public class ReviewEntity
 
     public User User { get; set; }
 
-    public string Comment { get; set; }
+    public string Content { get; set; }
 
     public int Rating { get; set; }
 
