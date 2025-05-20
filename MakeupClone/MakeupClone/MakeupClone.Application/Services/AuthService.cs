@@ -1,8 +1,11 @@
 ﻿using FluentValidation;
-using MakeupClone.Application.DTOs;
+
+using MakeupClone.Application.DTOs.Auth;
 using MakeupClone.Application.Interfaces;
 using MakeupClone.Domain.Entities;
+using MakeupClone.Domain.Enums;
 using MakeupClone.Domain.Interfaces;
+
 using Microsoft.AspNetCore.Identity;
 
 namespace MakeupClone.Application.Services;
@@ -55,6 +58,8 @@ public class AuthService : IAuthService
                 Errors = result.Errors.Select(error => error.Description)
             };
         }
+
+        await _userManager.AddToRoleAsync(user, Roles.User);
 
         var token = _jwtTokenGenerator.GenerateToken(user.Id, user.Email);
         return new AuthResultDto { Success = true, Token = token };

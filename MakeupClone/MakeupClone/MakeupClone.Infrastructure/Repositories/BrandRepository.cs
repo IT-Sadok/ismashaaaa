@@ -19,18 +19,20 @@ public class BrandRepository : IBrandRepository
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<Brand>> GetByFilterAsync(PagingAndSortingFilter filter)
+    public async Task<(IEnumerable<Brand> Items, int TotalCount)> GetByFilterAsync(PagingAndSortingFilter filter, CancellationToken cancellationToken)
     {
         var query = _dbContext.Brands
             .AsQueryable();
+
+        var totalCount = await query.CountAsync(cancellationToken);
 
         query = query.Skip(filter.Skip).Take(filter.Take);
 
         var brands = await query
             .ProjectTo<Brand>(_mapper.ConfigurationProvider)
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
-        return brands;
+        return (brands, totalCount);
     }
 }

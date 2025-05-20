@@ -1,4 +1,6 @@
-﻿using MakeupClone.Domain.Filters;
+﻿using MakeupClone.Domain.Common;
+using MakeupClone.Domain.Entities;
+using MakeupClone.Domain.Filters;
 using MakeupClone.Domain.Interfaces;
 
 namespace MakeupClone.Domain.Services;
@@ -14,10 +16,20 @@ public class ProductService : IProductService
         _validationService = validationService;
     }
 
-    public async Task<ProductFilterResult> GetProductsByFilterAsync(ProductFilter filter)
+    public async Task<PagedResult<Product>> GetProductsByFilterAsync(ProductFilter filter, CancellationToken cancellationToken)
     {
-        _validationService.Validate(filter);
+        _validationService.ValidateAndThrow(filter);
 
-        return await _productRepository.GetByFilterAsync(filter);
+        var (items, totalCount) = await _productRepository.GetByFilterAsync(filter, cancellationToken);
+
+        int pageSize = filter.Take;
+        int pageNumber = CalculatePageNumber(filter.Skip, pageSize);
+
+        return new PagedResult<Product>(items, totalCount, pageNumber, pageSize);
+    }
+
+    private static int CalculatePageNumber(int skip, int take)
+    {
+        return (skip / take) + 1;
     }
 }

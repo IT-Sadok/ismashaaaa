@@ -1,3 +1,4 @@
+using MakeupClone.API.Endpoints;
 using MakeupClone.Application.Interfaces;
 using MakeupClone.Domain.Interfaces;
 using MakeupClone.Infrastructure.Data.MappingProfiles;
@@ -6,7 +7,6 @@ using MakeupClone.Infrastructure.Secutiry;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -14,6 +14,8 @@ builder.Services
     .AddDatabase(builder.Configuration)
     .AddIdentityConfiguration()
     .AddAuthenticationConfiguration(builder.Configuration)
+    .AddConfigurationSettings(builder.Configuration)
+    .AddAuthorizationPolicies()
     .AddCustomValidators()
     .AddRepositories()
     .AddServices();
@@ -36,6 +38,10 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapAuthEndpoints();
+app.MapBrandEndpoints();
+app.MapCategoryEndpoints();
+app.MapAdminProductEndpoints();
+app.MapProductEndpoints();
 
 app.Run();

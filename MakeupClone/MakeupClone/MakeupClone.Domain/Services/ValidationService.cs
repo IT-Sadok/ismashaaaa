@@ -12,7 +12,7 @@ public class ValidationService : IValidationService
         _validators = validators;
     }
 
-    public void Validate<T>(T entity)
+    public void ValidateAndThrow<T>(T entity)
     {
         var validator = _validators.OfType<IValidator<T>>().FirstOrDefault();
         if (validator == null)

@@ -7,6 +7,7 @@ using MakeupClone.Domain.Interfaces;
 using MakeupClone.Domain.Services;
 using MakeupClone.Infrastructure.Data;
 using MakeupClone.Infrastructure.Repositories;
+using MakeupClone.Infrastructure.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -67,6 +68,15 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    public static IServiceCollection AddAuthorizationPolicies(this IServiceCollection services)
+    {
+        services.AddAuthorizationBuilder()
+            .AddPolicy("AdminPolicy", policy =>
+                policy.RequireRole("Admin"));
+
+        return services;
+    }
+
     public static IServiceCollection AddCustomValidators(this IServiceCollection services)
     {
         services.AddValidatorsFromAssemblyContaining<RegisterValidator>();
@@ -87,9 +97,18 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<IAdminProductService, AdminProductService>();
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IBrandService, BrandService>();
         services.AddScoped<IValidationService, ValidationService>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddConfigurationSettings(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.Configure<AdminAccountSettings>(
+            configuration.GetSection("AdminAccountSettings"));
 
         return services;
     }

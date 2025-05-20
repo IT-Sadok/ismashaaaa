@@ -5,5 +5,5 @@ namespace MakeupClone.Domain.Interfaces;
 
 public interface ICategoryRepository
 {
-    Task<IEnumerable<Category>> GetByFilterAsync(PagingAndSortingFilter filter);
+    Task<(IEnumerable<Category> Items, int TotalCount)> GetByFilterAsync(PagingAndSortingFilter filter, CancellationToken cancellationToken);
 }

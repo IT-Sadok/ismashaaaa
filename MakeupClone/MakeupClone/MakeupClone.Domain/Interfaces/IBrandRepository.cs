@@ -5,5 +5,5 @@ namespace MakeupClone.Domain.Interfaces;
 
 public interface IBrandRepository
 {
-    Task<IEnumerable<Brand>> GetByFilterAsync(PagingAndSortingFilter filter);
+    Task<(IEnumerable<Brand> Items, int TotalCount)> GetByFilterAsync(PagingAndSortingFilter filter, CancellationToken cancellationToken);
 }

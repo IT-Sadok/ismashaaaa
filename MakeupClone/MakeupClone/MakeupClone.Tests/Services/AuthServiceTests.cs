@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
+
 using Google.Apis.Auth;
-using MakeupClone.Application.DTOs;
+
+using MakeupClone.Application.DTOs.Auth;
 using MakeupClone.Application.Interfaces;
 using MakeupClone.Application.Services;
 using MakeupClone.Application.Validators;
@@ -8,8 +10,10 @@ using MakeupClone.Domain.Entities;
 using MakeupClone.Domain.Interfaces;
 using MakeupClone.Infrastructure.Data;
 using MakeupClone.Tests.Common;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+
 using Moq;
 
 namespace MakeupClone.Tests.Services;

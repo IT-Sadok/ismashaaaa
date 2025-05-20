@@ -1,4 +1,4 @@
-﻿using MakeupClone.Application.DTOs;
+﻿using MakeupClone.Application.DTOs.Auth;
 
 namespace MakeupClone.Application.Interfaces;
 

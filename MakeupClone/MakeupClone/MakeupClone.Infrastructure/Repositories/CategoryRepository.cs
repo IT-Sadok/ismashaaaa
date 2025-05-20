@@ -19,18 +19,20 @@ public class CategoryRepository : ICategoryRepository
         _mapper = mapper;
     }
 
-    public async Task<IEnumerable<Category>> GetByFilterAsync(PagingAndSortingFilter filter)
+    public async Task<(IEnumerable<Category> Items, int TotalCount)> GetByFilterAsync(PagingAndSortingFilter filter, CancellationToken cancellationToken)
     {
         var query = _dbContext.Categories
            .AsQueryable();
+
+        var totalCount = await query.CountAsync(cancellationToken);
 
         query = query.Skip(filter.Skip).Take(filter.Take);
 
         var categories = await query
             .ProjectTo<Category>(_mapper.ConfigurationProvider)
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
-        return categories;
+        return (categories, totalCount);
     }
 }

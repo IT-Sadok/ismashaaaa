@@ -1,4 +1,4 @@
-﻿namespace MakeupClone.Application.DTOs;
+﻿namespace MakeupClone.Application.DTOs.Auth;
 
 public class RegisterDto
 {

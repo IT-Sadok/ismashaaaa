@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+
 using FluentValidation;
-using MakeupClone.Application.DTOs;
+
+using MakeupClone.Application.DTOs.Auth;
 using MakeupClone.Application.Interfaces;
 using MakeupClone.Application.Validators;
 using MakeupClone.Domain.Entities;
@@ -8,10 +10,12 @@ using MakeupClone.Domain.Interfaces;
 using MakeupClone.Infrastructure.Data;
 using MakeupClone.Infrastructure.Data.MappingProfiles;
 using MakeupClone.Infrastructure.Secutiry;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 using Moq;
 
 namespace MakeupClone.Tests.Common;

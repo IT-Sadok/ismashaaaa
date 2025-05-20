@@ -242,7 +242,7 @@ ClientBin/
 *.pfx
 *.publishsettings
 orleans.codegen.cs
-appsettings.Development.json
+**/appsettings.Development.json
 appsettings.Test.json
 
 # Including strong name files can present a security risk

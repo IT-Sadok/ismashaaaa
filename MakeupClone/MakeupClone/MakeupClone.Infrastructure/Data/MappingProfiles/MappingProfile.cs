@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MakeupClone.Application.DTOs.Products;
 using MakeupClone.Domain.Entities;
 using MakeupClone.Infrastructure.Data.Entities;
 
@@ -12,5 +13,9 @@ public class MappingProfile : Profile
         CreateMap<Category, CategoryEntity>().ReverseMap();
         CreateMap<Brand, BrandEntity>().ReverseMap();
         CreateMap<Review, ReviewEntity>().ReverseMap();
+
+        CreateMap<ProductCreateDto, Product>();
+        CreateMap<ProductUpdateDto, Product>();
+        CreateMap<Product, ProductDto>();
     }
 }

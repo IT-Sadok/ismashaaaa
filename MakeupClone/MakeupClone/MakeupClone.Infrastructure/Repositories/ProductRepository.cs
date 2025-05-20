@@ -21,7 +21,52 @@ public class ProductRepository : IProductRepository
         _mapper = mapper;
     }
 
-    public async Task<ProductFilterResult> GetByFilterAsync(ProductFilter filter)
+    public async Task<Product> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var product = await _dbContext.Products
+            .Include(product => product.Category)
+            .Include(product => product.Brand)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(product => product.Id == id, cancellationToken);
+
+        return _mapper.Map<Product>(product);
+    }
+
+    public async Task AddAsync(Product product, CancellationToken cancellationToken)
+    {
+        var productEntity = _mapper.Map<ProductEntity>(product);
+
+        await _dbContext.Products.AddAsync(productEntity, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task UpdateAsync(Product product, CancellationToken cancellationToken)
+    {
+        var existingProduct = await _dbContext.Products
+            .Include(productDb => productDb.Category)
+            .Include(productDb => productDb.Brand)
+            .FirstOrDefaultAsync(products => products.Id == product.Id, cancellationToken);
+
+        if (existingProduct == null)
+            return;
+
+        _mapper.Map(product, existingProduct);
+        _dbContext.Products.Update(existingProduct);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var existingProduct = await _dbContext.Products.FindAsync(id, cancellationToken);
+
+        if (existingProduct == null)
+            return;
+
+        _dbContext.Products.Remove(existingProduct);
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<(IEnumerable<Product> Items, int TotalCount)> GetByFilterAsync(ProductFilter filter, CancellationToken cancellationToken)
     {
         var query = _dbContext.Products
             .Include(product => product.Category)
@@ -30,7 +75,7 @@ public class ProductRepository : IProductRepository
 
         query = ApplyFilters(query, filter);
 
-        var totalCount = await query.CountAsync();
+        var totalCount = await query.CountAsync(cancellationToken);
 
         if (!string.IsNullOrEmpty(filter.OrderBy) && AllowedSortFields.Contains(filter.OrderBy))
         {
@@ -59,22 +104,18 @@ public class ProductRepository : IProductRepository
         var products = await query
             .ProjectTo<Product>(_mapper.ConfigurationProvider)
             .AsNoTracking()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
-        return new ProductFilterResult
-        {
-            Products = products,
-            TotalCount = totalCount,
-        };
+        return (products, totalCount);
     }
 
-    private static readonly HashSet<string> AllowedSortFields =
-    [
+    private static readonly HashSet<string> AllowedSortFields = new ()
+    {
         nameof(Product.Category),
         nameof(Product.Brand),
         nameof(Product.Name),
         nameof(Product.Price)
-    ];
+    };
 
     private static IQueryable<ProductEntity> ApplyFilters(IQueryable<ProductEntity> query, ProductFilter filter)
     {
