@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using MakeupClone.Application.Interfaces;
 using MakeupClone.Domain.Entities;
 using MakeupClone.Domain.Filters;
-using MakeupClone.Domain.Interfaces;
 using MakeupClone.Infrastructure.Data;
+using MakeupClone.Infrastructure.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace MakeupClone.Infrastructure.Repositories;
@@ -21,8 +22,7 @@ public class BrandRepository : IBrandRepository
 
     public async Task<(IEnumerable<Brand> Items, int TotalCount)> GetByFilterAsync(PagingAndSortingFilter filter, CancellationToken cancellationToken)
     {
-        var query = _dbContext.Brands
-            .AsQueryable();
+        IQueryable<BrandEntity> query = _dbContext.Brands;
 
         var totalCount = await query.CountAsync(cancellationToken);
 

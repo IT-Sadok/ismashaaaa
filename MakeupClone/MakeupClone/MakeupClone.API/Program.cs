@@ -1,6 +1,6 @@
 using MakeupClone.API.Endpoints;
+using MakeupClone.Application.Extensions;
 using MakeupClone.Application.Interfaces;
-using MakeupClone.Domain.Interfaces;
 using MakeupClone.Infrastructure.Data.MappingProfiles;
 using MakeupClone.Infrastructure.Extensions;
 using MakeupClone.Infrastructure.Secutiry;

@@ -1,4 +1,4 @@
-﻿namespace MakeupClone.Domain.Interfaces;
+﻿namespace MakeupClone.Application.Interfaces;
 
 public interface IValidationService
 {

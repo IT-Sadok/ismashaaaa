@@ -1,6 +1,6 @@
 ﻿using MakeupClone.Domain.Entities;
 
-namespace MakeupClone.Domain.Interfaces;
+namespace MakeupClone.Application.Interfaces;
 
 public interface IAdminProductService
 {

@@ -1,9 +1,12 @@
-﻿using MakeupClone.Infrastructure.Data.Entities;
+﻿using MakeupClone.Domain.Entities;
+using MakeupClone.Infrastructure.Data.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace MakeupClone.Infrastructure.Data;
 
-public class MakeupCloneDbContext : DbContext
+public class MakeupCloneDbContext : IdentityDbContext<User, IdentityRole, string>
 {
     public MakeupCloneDbContext(DbContextOptions<MakeupCloneDbContext> options) : base(options)
     { }

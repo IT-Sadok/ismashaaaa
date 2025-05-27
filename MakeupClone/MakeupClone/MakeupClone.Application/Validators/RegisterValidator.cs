@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-
 using MakeupClone.Application.DTOs.Auth;
 
 namespace MakeupClone.Application.Validators;

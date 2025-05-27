@@ -1,19 +1,15 @@
 ﻿using FluentValidation;
-
 using Google.Apis.Auth;
-
 using MakeupClone.Application.DTOs.Auth;
 using MakeupClone.Application.Interfaces;
 using MakeupClone.Application.Services;
 using MakeupClone.Application.Validators;
 using MakeupClone.Domain.Entities;
-using MakeupClone.Domain.Interfaces;
+using MakeupClone.Domain.Enums;
 using MakeupClone.Infrastructure.Data;
 using MakeupClone.Tests.Common;
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-
 using Moq;
 
 namespace MakeupClone.Tests.Services;
@@ -52,7 +48,7 @@ public class AuthServiceTests : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await InitializeData(_dbContext);
+        await InitializeDataAsync(_dbContext);
     }
 
     public Task DisposeAsync()
@@ -62,8 +58,15 @@ public class AuthServiceTests : IAsyncLifetime
         return Task.CompletedTask;
     }
 
-    private async Task InitializeData(MakeupCloneDbContext context)
+    private async Task InitializeDataAsync(MakeupCloneDbContext context)
     {
+        var roleManager = _serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+        if (!await roleManager.RoleExistsAsync(Roles.User))
+        {
+            await roleManager.CreateAsync(new IdentityRole(Roles.User));
+        }
+
         var user = new User
         {
             Id = Guid.NewGuid().ToString(),
@@ -80,7 +83,7 @@ public class AuthServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Register_WithValidData_ShouldReturnToken()
+    public async Task RegisterAsync_WithValidData_ShouldReturnToken()
     {
         var registerDto = CreateRegisterDto(email: Guid.NewGuid() + "@example.com");
 
@@ -92,7 +95,7 @@ public class AuthServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Register_WithInvalidEmail_ShouldReturnValidationError()
+    public async Task RegisterAsync_WithInvalidEmail_ShouldReturnValidationError()
     {
         var registerDto = CreateRegisterDto(email: "invalid-email");
 
@@ -103,7 +106,7 @@ public class AuthServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Register_WithShortPassword_ShouldReturnValidationError()
+    public async Task RegisterAsync_WithShortPassword_ShouldReturnValidationError()
     {
         var registerDto = CreateRegisterDto(password: "123");
 
@@ -114,7 +117,7 @@ public class AuthServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Register_WithExistingEmail_ShouldReturnIdentityError()
+    public async Task RegisterAsync_WithExistingEmail_ShouldReturnIdentityError()
     {
         var registerDto = CreateRegisterDto(email: "existing@example.com");
 
@@ -125,7 +128,7 @@ public class AuthServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Register_WithInvalidPhone_ShouldReturnValidationError()
+    public async Task RegisterAsync_WithInvalidPhone_ShouldReturnValidationError()
     {
         var registerDto = CreateRegisterDto(phoneNumber: "123abc");
 
@@ -136,7 +139,7 @@ public class AuthServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Register_WithNullFields_ShouldReturnValidationErrors()
+    public async Task RegisterAsync_WithNullFields_ShouldReturnValidationErrors()
     {
         var registerDto = new RegisterDto();
 
@@ -150,7 +153,7 @@ public class AuthServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Login_WithValidCredentials_ShouldReturnToken()
+    public async Task LoginAsync_WithValidCredentials_ShouldReturnToken()
     {
         var loginDto = CreateLoginDto(email: "existing@example.com", password: "Test1234!");
 
@@ -161,7 +164,7 @@ public class AuthServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Login_WithInvalidEmail_ShouldReturnError()
+    public async Task LoginAsync_WithInvalidEmail_ShouldReturnError()
     {
         var loginDto = CreateLoginDto(email: "invalid-email");
 
@@ -172,7 +175,7 @@ public class AuthServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Login_WithWrongPassword_ShouldReturnError()
+    public async Task LoginAsync_WithWrongPassword_ShouldReturnError()
     {
         var loginDto = CreateLoginDto(email: "existing@example.com", password: "WrongPass123!");
 
@@ -183,7 +186,7 @@ public class AuthServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Login_WithMissingFields_ShouldReturnValidationErrors()
+    public async Task LoginAsync_WithMissingFields_ShouldReturnValidationErrors()
     {
         var loginDto = new LoginDto();
 
@@ -195,7 +198,7 @@ public class AuthServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Login_WithNotExistingUser_ShouldReturnError()
+    public async Task LoginAsync_WithNotExistingUser_ShouldReturnError()
     {
         var loginDto = CreateLoginDto(email: "notfound@example.com");
 
@@ -206,7 +209,7 @@ public class AuthServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task GoogleLogin_WithValidTokenAndExistingUser_ShouldReturnToken()
+    public async Task GoogleLoginAsync_WithValidTokenAndExistingUser_ShouldReturnToken()
     {
         var googleLoginDto = CreateGoogleLoginDto("valid_token");
         var payload = new GoogleJsonWebSignature.Payload
@@ -225,7 +228,7 @@ public class AuthServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task GoogleLogin_WithValidTokenAndNewUser_ShouldCreateUserAndReturnToken()
+    public async Task GoogleLoginAsync_WithValidTokenAndNewUser_ShouldCreateUserAndReturnToken()
     {
         var googleLoginDto = CreateGoogleLoginDto("new_token");
         var payload = new GoogleJsonWebSignature.Payload

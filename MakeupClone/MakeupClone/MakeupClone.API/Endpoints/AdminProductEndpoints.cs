@@ -1,5 +1,5 @@
-﻿using MakeupClone.Domain.Entities;
-using MakeupClone.Domain.Interfaces;
+﻿using MakeupClone.Application.Interfaces;
+using MakeupClone.Domain.Entities;
 
 namespace MakeupClone.API.Endpoints;
 
@@ -11,7 +11,7 @@ public static class AdminProductEndpoints
             .RequireAuthorization("AdminPolicy");
 
         group.MapGet("/{id}", GetProductByIdAsync);
-        group.MapPost(" ", AddProductAsync);
+        group.MapPost("/", AddProductAsync);
         group.MapPut("/{id}", UpdateProductAsync);
         group.MapDelete("/{id}", DeleteProductAsync);
     }
@@ -24,11 +24,11 @@ public static class AdminProductEndpoints
 
     private static async Task<IResult> AddProductAsync(IAdminProductService adminProductService, Product product, CancellationToken cancellationToken)
     {
-        await adminProductService.AddProductAsync(product, cancellationToken);
+         await adminProductService.AddProductAsync(product, cancellationToken);
         return Results.Created($"/api/admin/products/{product.Id}", product);
     }
 
-    private static async Task<IResult> UpdateProductAsync(Guid id, Product product, IAdminProductService adminProductService, CancellationToken cancellationToken)
+    private static async Task<IResult> UpdateProductAsync(IAdminProductService adminProductService, Guid id, Product product, CancellationToken cancellationToken)
     {
         await adminProductService.UpdateProductAsync(product, cancellationToken);
         return Results.NoContent();

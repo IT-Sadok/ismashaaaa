@@ -1,21 +1,17 @@
 ﻿using AutoMapper;
-
 using FluentValidation;
-
-using MakeupClone.Application.DTOs.Auth;
 using MakeupClone.Application.Interfaces;
+using MakeupClone.Application.Services;
 using MakeupClone.Application.Validators;
 using MakeupClone.Domain.Entities;
-using MakeupClone.Domain.Interfaces;
 using MakeupClone.Infrastructure.Data;
 using MakeupClone.Infrastructure.Data.MappingProfiles;
+using MakeupClone.Infrastructure.Repositories;
 using MakeupClone.Infrastructure.Secutiry;
-
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-
 using Moq;
 
 namespace MakeupClone.Tests.Common;
@@ -35,6 +31,7 @@ public static class TestServiceProviderFactory
         AddConfiguration(services);
         AddJwtTokenGenerator(services);
         AddGoogleJsonWebSignatureMock(services);
+        AddAdminProductServices(services);
 
         return services.BuildServiceProvider();
     }
@@ -73,8 +70,7 @@ public static class TestServiceProviderFactory
 
     private static void AddValidators(IServiceCollection services)
     {
-        services.AddTransient<IValidator<RegisterDto>, RegisterValidator>();
-        services.AddTransient<IValidator<LoginDto>, LoginValidator>();
+        services.AddValidatorsFromAssemblyContaining<RegisterValidator>();
     }
 
     private static void AddConfiguration(IServiceCollection services)
@@ -105,5 +101,12 @@ public static class TestServiceProviderFactory
         services.AddSingleton(googleWrapperMock);
         services.AddSingleton(
             provider => provider.GetRequiredService<Mock<IGoogleJsonWebSignatureWrapper>>().Object);
+    }
+
+    private static void AddAdminProductServices(IServiceCollection services)
+    {
+        services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<IValidationService, ValidationService>();
+        services.AddScoped<IAdminProductService, AdminProductService>();
     }
 }

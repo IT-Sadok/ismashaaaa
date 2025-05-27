@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using MakeupClone.Application.Interfaces;
 using MakeupClone.Domain.Entities;
 using MakeupClone.Domain.Filters;
-using MakeupClone.Domain.Interfaces;
 using MakeupClone.Infrastructure.Data;
 using MakeupClone.Infrastructure.Data.Entities;
 using MakeupClone.Infrastructure.Extensions;
@@ -51,7 +51,7 @@ public class ProductRepository : IProductRepository
             return;
 
         _mapper.Map(product, existingProduct);
-        _dbContext.Products.Update(existingProduct);
+
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
@@ -68,10 +68,9 @@ public class ProductRepository : IProductRepository
 
     public async Task<(IEnumerable<Product> Items, int TotalCount)> GetByFilterAsync(ProductFilter filter, CancellationToken cancellationToken)
     {
-        var query = _dbContext.Products
+        IQueryable<ProductEntity> query = _dbContext.Products
             .Include(product => product.Category)
-            .Include(product => product.Brand)
-            .AsQueryable();
+            .Include(product => product.Brand);
 
         query = ApplyFilters(query, filter);
 

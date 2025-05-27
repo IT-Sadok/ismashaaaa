@@ -1,5 +1,5 @@
-﻿using MakeupClone.Domain.Filters;
-using MakeupClone.Domain.Interfaces;
+﻿using MakeupClone.Application.Interfaces;
+using MakeupClone.Domain.Filters;
 
 namespace MakeupClone.API.Endpoints;
 

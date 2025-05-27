@@ -1,8 +1,8 @@
-﻿using MakeupClone.Domain.Entities;
+﻿using MakeupClone.Application.Interfaces;
+using MakeupClone.Domain.Entities;
 using MakeupClone.Domain.Exceptions;
-using MakeupClone.Domain.Interfaces;
 
-namespace MakeupClone.Domain.Services;
+namespace MakeupClone.Application.Services;
 
 public class AdminProductService : IAdminProductService
 {

@@ -1,11 +1,8 @@
 ﻿using FluentValidation;
-
 using MakeupClone.Application.DTOs.Auth;
 using MakeupClone.Application.Interfaces;
 using MakeupClone.Domain.Entities;
 using MakeupClone.Domain.Enums;
-using MakeupClone.Domain.Interfaces;
-
 using Microsoft.AspNetCore.Identity;
 
 namespace MakeupClone.Application.Services;

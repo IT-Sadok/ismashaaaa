@@ -1,10 +1,7 @@
 ﻿using FluentValidation;
 using MakeupClone.Application.Interfaces;
-using MakeupClone.Application.Services;
 using MakeupClone.Application.Validators;
 using MakeupClone.Domain.Entities;
-using MakeupClone.Domain.Interfaces;
-using MakeupClone.Domain.Services;
 using MakeupClone.Infrastructure.Data;
 using MakeupClone.Infrastructure.Repositories;
 using MakeupClone.Infrastructure.Settings;
@@ -89,18 +86,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IBrandRepository, BrandRepository>();
-
-        return services;
-    }
-
-    public static IServiceCollection AddServices(this IServiceCollection services)
-    {
-        services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<IProductService, ProductService>();
-        services.AddScoped<IAdminProductService, AdminProductService>();
-        services.AddScoped<ICategoryService, CategoryService>();
-        services.AddScoped<IBrandService, BrandService>();
-        services.AddScoped<IValidationService, ValidationService>();
 
         return services;
     }

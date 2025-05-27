@@ -1,20 +1,21 @@
 ﻿using FluentValidation;
-using MakeupClone.Domain.Interfaces;
+using MakeupClone.Application.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace MakeupClone.Domain.Services;
+namespace MakeupClone.Application.Services;
 
 public class ValidationService : IValidationService
 {
-    private readonly IEnumerable<IValidator> _validators;
+    private readonly IServiceProvider _serviceProvider;
 
-    public ValidationService(IEnumerable<IValidator> validators)
+    public ValidationService(IServiceProvider serviceProvider)
     {
-        _validators = validators;
+        _serviceProvider = serviceProvider;
     }
 
     public void ValidateAndThrow<T>(T entity)
     {
-        var validator = _validators.OfType<IValidator<T>>().FirstOrDefault();
+        var validator = _serviceProvider.GetService<IValidator<T>>();
         if (validator == null)
         {
             throw new InvalidOperationException($"No validator found for type {typeof(T).Name}.");

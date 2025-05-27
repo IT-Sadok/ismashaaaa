@@ -12,13 +12,26 @@ public static class TestDbContextFactory
             .Options;
 
         var context = new MakeupCloneDbContext(options);
-        context.Database.EnsureCreated();
 
         return context;
     }
 
     public static void ClearDatabase(MakeupCloneDbContext context)
     {
-        context.Database.ExecuteSqlRaw("TRUNCATE TABLE \"Brands\", \"Categories\", \"Products\", \"Reviews\" RESTART IDENTITY CASCADE;");
+        context.Database.ExecuteSqlRaw("""
+        TRUNCATE TABLE 
+            "AspNetUserRoles",
+            "AspNetUserClaims",
+            "AspNetUserLogins",
+            "AspNetUserTokens",
+            "AspNetUsers",
+            "AspNetRoleClaims",
+            "AspNetRoles",
+            "Reviews",
+            "Products",
+            "Categories",
+            "Brands"
+        RESTART IDENTITY CASCADE;
+    """);
     }
 }
