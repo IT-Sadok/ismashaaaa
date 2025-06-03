@@ -31,7 +31,7 @@ public class AdminProductServiceTests : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await InitializeData(_dbContext);
+        await InitializeDataAsync(_dbContext);
     }
 
     public Task DisposeAsync()
@@ -41,7 +41,7 @@ public class AdminProductServiceTests : IAsyncLifetime
         return Task.CompletedTask;
     }
 
-    private async Task InitializeData(MakeupCloneDbContext dbContext)
+    private async Task InitializeDataAsync(MakeupCloneDbContext dbContext)
     {
         var category = new CategoryEntity { Id = Guid.NewGuid(), Name = "TestCategory" };
         dbContext.Categories.Add(category);
@@ -103,6 +103,15 @@ public class AdminProductServiceTests : IAsyncLifetime
             _adminProductService.GetProductByIdAsync(productId, CancellationToken.None));
 
         Assert.Equal($"Product with ID {productId} not found.", exception.Message);
+    }
+
+    [Fact]
+    public async Task GetAllProductsAsync_ShouldReturnAllProducts()
+    {
+        var result = await _adminProductService.GetAllProductsAsync(CancellationToken.None);
+
+        Assert.NotNull(result);
+        Assert.Equal(2, result.Count());
     }
 
     [Fact]
@@ -208,6 +217,84 @@ public class AdminProductServiceTests : IAsyncLifetime
 
         var result = await Assert.ThrowsAsync<EntityNotFoundException>(() =>
             _adminProductService.DeleteProductAsync(productId, CancellationToken.None));
+
+        Assert.Equal($"Product with ID {productId} not found.", result.Message);
+    }
+
+    [Fact]
+    public async Task AddDiscountAsync_WithValidProductId_ShouldApplyDiscount()
+    {
+        var productId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        decimal discount = 20;
+
+        await _adminProductService.AddDiscountAsync(productId, discount, CancellationToken.None);
+        var result = await _dbContext.Products.FindAsync(productId);
+
+        Assert.NotNull(result);
+        Assert.Equal(discount, result.DiscountPercentage);
+    }
+
+    [Fact]
+    public async Task AddDiscountAsync_WithNonExistingProduct_ShouldThrowNotFound()
+    {
+        var productId = Guid.NewGuid();
+        decimal discount = 15;
+
+        var result = await Assert.ThrowsAsync<EntityNotFoundException>(() =>
+            _adminProductService.AddDiscountAsync(productId, discount, CancellationToken.None));
+
+        Assert.Equal($"Product with ID {productId} not found.", result.Message);
+    }
+
+    [Fact]
+    public async Task UpdateDiscountAsync_WithValidProductId_ShouldUpdateDiscount()
+    {
+        var productId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        decimal initialDiscount = 10;
+        decimal updatedDiscount = 25;
+
+        await _adminProductService.AddDiscountAsync(productId, initialDiscount, CancellationToken.None);
+
+        await _adminProductService.UpdateDiscountAsync(productId, updatedDiscount, CancellationToken.None);
+        var result = await _dbContext.Products.FindAsync(productId);
+
+        Assert.NotNull(result);
+        Assert.Equal(updatedDiscount, result.DiscountPercentage);
+    }
+
+    [Fact]
+    public async Task UpdateDiscountAsync_WithNonExistingProduct_ShouldThrowNotFound()
+    {
+        var productId = Guid.NewGuid();
+        decimal discount = 25;
+
+        var result = await Assert.ThrowsAsync<EntityNotFoundException>(() =>
+            _adminProductService.UpdateDiscountAsync(productId, discount, CancellationToken.None));
+
+        Assert.Equal($"Product with ID {productId} not found.", result.Message);
+    }
+
+    [Fact]
+    public async Task RemoveDiscountAsync_WithValidProductId_ShouldRemoveDiscount()
+    {
+        var productId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+        decimal discount = 30;
+        await _adminProductService.AddDiscountAsync(productId, discount, CancellationToken.None);
+
+        await _adminProductService.RemoveDiscountAsync(productId, CancellationToken.None);
+        var result = await _dbContext.Products.FindAsync(productId);
+
+        Assert.NotNull(result);
+        Assert.Null(result.DiscountPercentage);
+    }
+
+    [Fact]
+    public async Task RemoveDiscountAsync_WithNonExistingProduct_ShouldThrowNotFound()
+    {
+        var productId = Guid.NewGuid();
+
+        var result = await Assert.ThrowsAsync<EntityNotFoundException>(() =>
+            _adminProductService.RemoveDiscountAsync(productId, CancellationToken.None));
 
         Assert.Equal($"Product with ID {productId} not found.", result.Message);
     }

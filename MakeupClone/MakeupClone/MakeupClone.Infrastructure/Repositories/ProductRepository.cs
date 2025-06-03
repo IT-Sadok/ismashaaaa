@@ -32,12 +32,21 @@ public class ProductRepository : IProductRepository
         return _mapper.Map<Product>(product);
     }
 
+    public async Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken)
+    {
+        return await _dbContext.Products
+            .Include(product => product.Category)
+            .Include(product => product.Brand)
+            .ProjectTo<Product>(_mapper.ConfigurationProvider)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task AddAsync(Product product, CancellationToken cancellationToken)
     {
         var productEntity = _mapper.Map<ProductEntity>(product);
 
         await _dbContext.Products.AddAsync(productEntity, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task UpdateAsync(Product product, CancellationToken cancellationToken)
@@ -51,8 +60,6 @@ public class ProductRepository : IProductRepository
             return;
 
         _mapper.Map(product, existingProduct);
-
-        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
@@ -63,7 +70,6 @@ public class ProductRepository : IProductRepository
             return;
 
         _dbContext.Products.Remove(existingProduct);
-        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<(IEnumerable<Product> Items, int TotalCount)> GetByFilterAsync(ProductFilter filter, CancellationToken cancellationToken)
@@ -106,6 +112,11 @@ public class ProductRepository : IProductRepository
             .ToListAsync(cancellationToken);
 
         return (products, totalCount);
+    }
+
+    public async Task SaveChangesAsync(CancellationToken cancellationToken)
+    {
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     private static readonly HashSet<string> AllowedSortFields = new ()

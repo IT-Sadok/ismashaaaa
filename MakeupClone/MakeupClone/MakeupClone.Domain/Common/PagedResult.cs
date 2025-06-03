@@ -2,7 +2,7 @@
 
 public class PagedResult<T>
 {
-    public IEnumerable<T> Items { get; init; } = Enumerable.Empty<T>();
+    public IEnumerable<T> Items { get; init; } =[];
 
     public int TotalCount { get; init; }
 
@@ -20,7 +20,7 @@ public class PagedResult<T>
 
     public PagedResult(IEnumerable<T> items, int totalCount, int pageNumber, int pageSize)
     {
-        Items = items ?? Enumerable.Empty<T>();
+        Items = items ??[];
         TotalCount = totalCount;
         PageNumber = pageNumber;
         PageSize = pageSize;

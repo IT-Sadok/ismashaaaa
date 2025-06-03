@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MakeupClone.Domain.Entities;
+﻿namespace MakeupClone.Domain.Entities;
 
 public class Review
 {
@@ -10,7 +8,7 @@ public class Review
 
     public int Rating { get; set; }
 
-    public Guid UserId { get; set; }
+    public string UserId { get; set; }
 
     public User User { get; set; }
 

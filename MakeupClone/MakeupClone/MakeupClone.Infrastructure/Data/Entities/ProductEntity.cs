@@ -23,4 +23,6 @@ public class ProductEntity
     public BrandEntity Brand { get; set; }
 
     public ICollection<ReviewEntity> Reviews { get; set; }
+
+    public decimal? DiscountPercentage { get; set; }
 }

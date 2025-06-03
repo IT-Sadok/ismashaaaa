@@ -30,5 +30,8 @@ public class ProductConfiguration : IEntityTypeConfiguration<ProductEntity>
         builder.HasOne(product => product.Brand)
                .WithMany(brand => brand.Products)
                .HasForeignKey(product => product.BrandId);
+
+        builder.Property(product => product.DiscountPercentage)
+               .HasPrecision(5, 2);
     }
 }

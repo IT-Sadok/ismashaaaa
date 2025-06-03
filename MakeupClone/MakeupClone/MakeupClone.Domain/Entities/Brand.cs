@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MakeupClone.Domain.Entities;
+﻿namespace MakeupClone.Domain.Entities;
 
 public class Brand
 {

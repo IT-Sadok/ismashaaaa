@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MakeupClone.Domain.Entities;
+﻿namespace MakeupClone.Domain.Entities;
 
 public class Product
 {
@@ -25,4 +23,20 @@ public class Product
     public Brand Brand { get; set; }
 
     public ICollection<Review> Reviews { get; set; }
+
+    public decimal? DiscountPercentage { get; private set; }
+
+    public decimal DiscountedPrice => DiscountPercentage.HasValue ? Price * (1 - (DiscountPercentage.Value / 100)) : Price;
+
+    public void ApplyDiscount(decimal percentage)
+    {
+        if (percentage <= 0 || percentage >= 100)
+            throw new ArgumentOutOfRangeException(nameof(percentage), "Discount must be between 0 and 100.");
+
+        DiscountPercentage = percentage;
+    }
+
+    public void RemoveDiscount() => DiscountPercentage = null;
+
+    public void UpdateDiscount(decimal percentage) => ApplyDiscount(percentage);
 }

@@ -14,6 +14,9 @@ public static class AdminProductEndpoints
         group.MapPost("/", AddProductAsync);
         group.MapPut("/{id}", UpdateProductAsync);
         group.MapDelete("/{id}", DeleteProductAsync);
+        group.MapPost("/{id}/discount", AddDiscountAsync);
+        group.MapPut("/{id}/discount", UpdateDiscountAsync);
+        group.MapDelete("/{id}/discount", RemoveDiscountAsync);
     }
 
     private static async Task<IResult> GetProductByIdAsync(IAdminProductService adminProductService, Guid id, CancellationToken cancellationToken)
@@ -37,6 +40,24 @@ public static class AdminProductEndpoints
     private static async Task<IResult> DeleteProductAsync(IAdminProductService adminProductService, Guid id, CancellationToken cancellationToken)
     {
         await adminProductService.DeleteProductAsync(id, cancellationToken);
+        return Results.NoContent();
+    }
+
+    private static async Task<IResult> AddDiscountAsync(IAdminProductService adminProductService, Guid id, decimal discountPercentage, CancellationToken cancellationToken)
+    {
+        await adminProductService.AddDiscountAsync(id, discountPercentage, cancellationToken);
+        return Results.NoContent();
+    }
+
+    private static async Task<IResult> UpdateDiscountAsync(IAdminProductService adminProductService, Guid id, decimal discountPercentage, CancellationToken cancellationToken)
+    {
+        await adminProductService.UpdateDiscountAsync(id, discountPercentage, cancellationToken);
+        return Results.NoContent();
+    }
+
+    private static async Task<IResult> RemoveDiscountAsync(IAdminProductService adminProductService, Guid id, CancellationToken cancellationToken)
+    {
+        await adminProductService.RemoveDiscountAsync(id, cancellationToken);
         return Results.NoContent();
     }
 }

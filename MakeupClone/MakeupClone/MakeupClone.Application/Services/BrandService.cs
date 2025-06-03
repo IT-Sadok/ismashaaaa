@@ -1,4 +1,5 @@
-﻿using MakeupClone.Application.Interfaces;
+﻿using MakeupClone.Application.Helpers;
+using MakeupClone.Application.Interfaces;
 using MakeupClone.Domain.Common;
 using MakeupClone.Domain.Entities;
 using MakeupClone.Domain.Filters;
@@ -23,13 +24,8 @@ public class BrandService : IBrandService
         var (items, totalCount) = await _brandRepository.GetByFilterAsync(filter, cancellationToken);
 
         int pageSize = filter.Take;
-        int pageNumber = CalculatePageNumber(filter.Skip, pageSize);
+        int pageNumber = PaginationHelper.CalculatePageNumber(filter.Skip, pageSize);
 
         return new PagedResult<Brand>(items, totalCount, pageNumber, pageSize);
-    }
-
-    private static int CalculatePageNumber(int skip, int take)
-    {
-        return (skip / take) + 1;
     }
 }

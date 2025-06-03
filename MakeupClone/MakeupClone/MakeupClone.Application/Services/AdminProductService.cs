@@ -17,9 +17,12 @@ public class AdminProductService : IAdminProductService
 
     public async Task<Product> GetProductByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        _validationService.ValidateAndThrow(id);
-
         return await EnsureProductExistsAsync(id, cancellationToken);
+    }
+
+    public async Task<IEnumerable<Product>> GetAllProductsAsync(CancellationToken cancellationToken)
+    {
+        return await _productRepository.GetAllAsync(cancellationToken);
     }
 
     public async Task AddProductAsync(Product product, CancellationToken cancellationToken)
@@ -27,6 +30,7 @@ public class AdminProductService : IAdminProductService
         _validationService.ValidateAndThrow(product);
 
         await _productRepository.AddAsync(product, cancellationToken);
+        await _productRepository.SaveChangesAsync(cancellationToken);
     }
 
     public async Task UpdateProductAsync(Product product, CancellationToken cancellationToken)
@@ -35,14 +39,45 @@ public class AdminProductService : IAdminProductService
 
         await EnsureProductExistsAsync(product.Id, cancellationToken);
         await _productRepository.UpdateAsync(product, cancellationToken);
+        await _productRepository.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeleteProductAsync(Guid id, CancellationToken cancellationToken)
     {
-        _validationService.ValidateAndThrow(id);
-
         await EnsureProductExistsAsync(id, cancellationToken);
+
         await _productRepository.DeleteAsync(id, cancellationToken);
+        await _productRepository.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task AddDiscountAsync(Guid id, decimal discountPercentage, CancellationToken cancellationToken)
+    {
+        var product = await EnsureProductExistsAsync(id, cancellationToken);
+
+        product.ApplyDiscount(discountPercentage);
+
+        await _productRepository.UpdateAsync(product, cancellationToken);
+        await _productRepository.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task RemoveDiscountAsync(Guid id, CancellationToken cancellationToken)
+    {
+        var product = await EnsureProductExistsAsync(id, cancellationToken);
+
+        product.RemoveDiscount();
+
+        await _productRepository.UpdateAsync(product, cancellationToken);
+        await _productRepository.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task UpdateDiscountAsync(Guid id, decimal newDiscountPercentage, CancellationToken cancellationToken)
+    {
+        var product = await EnsureProductExistsAsync(id, cancellationToken);
+
+        product.UpdateDiscount(newDiscountPercentage);
+
+        await _productRepository.UpdateAsync(product, cancellationToken);
+        await _productRepository.SaveChangesAsync(cancellationToken);
     }
 
     private async Task<Product> EnsureProductExistsAsync(Guid id, CancellationToken cancellationToken)

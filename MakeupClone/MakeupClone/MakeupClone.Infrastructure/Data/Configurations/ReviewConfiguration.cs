@@ -16,23 +16,23 @@ public class ReviewConfiguration : IEntityTypeConfiguration<ReviewEntity>
            .IsRequired();
 
         builder.Property(review => review.UserId)
-               .IsRequired();
+            .IsRequired();
 
         builder.Property(review => review.Content)
-               .IsRequired();
+            .IsRequired();
 
         builder.Property(review => review.Rating)
-               .IsRequired();
+            .IsRequired();
 
         builder.Property(review => review.DateCreated)
-               .IsRequired();
+            .IsRequired();
 
         builder.HasOne(review => review.Product)
-               .WithMany(product => product.Reviews)
-               .HasForeignKey(review => review.ProductId);
+            .WithMany(product => product.Reviews)
+            .HasForeignKey(review => review.ProductId);
 
         builder.HasOne(review => review.User)
-               .WithMany()
-               .HasForeignKey(review => review.UserId);
+            .WithMany()
+            .HasForeignKey(review => review.UserId);
     }
 }
