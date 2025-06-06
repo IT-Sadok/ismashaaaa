@@ -9,23 +9,23 @@ namespace MakeupClone.Application.Services;
 public class CategoryService : ICategoryService
 {
     private readonly ICategoryRepository _categoryRepository;
-    private readonly IValidationService _validationService;
+    private readonly IValidationPipeline _validationPipeline;
 
-    public CategoryService(ICategoryRepository categoryRepository, IValidationService validationService)
+    public CategoryService(ICategoryRepository categoryRepository, IValidationPipeline validationPipeline)
     {
         _categoryRepository = categoryRepository;
-        _validationService = validationService;
+        _validationPipeline = validationPipeline;
     }
 
     public async Task<PagedResult<Category>> GetCategoriesByFilterAsync(PagingAndSortingFilter filter, CancellationToken cancellationToken)
     {
-        _validationService.ValidateAndThrow(filter);
+        await _validationPipeline.ExecuteAsync(filter, cancellationToken);
 
-        var (items, totalCount) = await _categoryRepository.GetByFilterAsync(filter, cancellationToken);
+        var unpagedResult = await _categoryRepository.GetByFilterAsync(filter, cancellationToken);
 
         int pageSize = filter.Take;
         int pageNumber = PaginationHelper.CalculatePageNumber(filter.Skip, pageSize);
 
-        return new PagedResult<Category>(items, totalCount, pageNumber, pageSize);
+        return new PagedResult<Category>(unpagedResult.Items, unpagedResult.TotalCount, pageNumber, pageSize);
     }
 }

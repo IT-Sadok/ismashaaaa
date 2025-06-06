@@ -22,7 +22,7 @@ public abstract class IntegrationTestBase : IDisposable
     {
         var config = new MapperConfiguration(configuration =>
         {
-            configuration.AddProfile<MappingProfile>();
+            configuration.AddMaps(typeof(ProductMappingProfile).Assembly);
         });
         return config.CreateMapper();
     }

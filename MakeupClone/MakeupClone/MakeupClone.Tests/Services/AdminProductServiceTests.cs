@@ -15,7 +15,7 @@ public class AdminProductServiceTests : IAsyncLifetime
 {
     private readonly MakeupCloneDbContext _dbContext;
     private readonly IProductRepository _productRepository;
-    private readonly IValidationService _validationService;
+    private readonly IValidationPipeline _validationPipeline;
     private readonly AdminProductService _adminProductService;
     private readonly ServiceProvider _serviceProvider;
 
@@ -24,9 +24,9 @@ public class AdminProductServiceTests : IAsyncLifetime
         _serviceProvider = TestServiceProviderFactory.Create();
         _dbContext = _serviceProvider.GetRequiredService<MakeupCloneDbContext>();
         _productRepository = _serviceProvider.GetRequiredService<IProductRepository>();
-        _validationService = _serviceProvider.GetRequiredService<IValidationService>();
+        _validationPipeline = _serviceProvider.GetRequiredService<IValidationPipeline>();
 
-        _adminProductService = new AdminProductService(_productRepository, _validationService);
+        _adminProductService = new AdminProductService(_productRepository, _validationPipeline);
     }
 
     public async Task InitializeAsync()

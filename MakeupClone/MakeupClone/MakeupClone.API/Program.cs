@@ -16,14 +16,14 @@ builder.Services
     .AddAuthenticationConfiguration(builder.Configuration)
     .AddConfigurationSettings(builder.Configuration)
     .AddAuthorizationPolicies()
-    .AddCustomValidators()
+    .AddValidation()
     .AddRepositories()
     .AddServices();
 
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IGoogleJsonWebSignatureWrapper, GoogleJsonWebSignatureWrapper>();
 
-builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddAutoMapper(typeof(ProductMappingProfile).Assembly);
 
 var app = builder.Build();
 

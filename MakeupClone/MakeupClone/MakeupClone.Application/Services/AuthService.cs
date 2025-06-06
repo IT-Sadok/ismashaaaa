@@ -11,28 +11,26 @@ public class AuthService : IAuthService
 {
     private readonly UserManager<User> _userManager;
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
-    private readonly IValidator<RegisterDto> _registrationValidator;
-    private readonly IValidator<LoginDto> _loginValidator;
+    private readonly IValidationPipeline _validationPipeline;
     private readonly IGoogleJsonWebSignatureWrapper _googleSignature;
 
     public AuthService(
         UserManager<User> userManager,
         IJwtTokenGenerator jwtTokenGenerator,
-        IValidator<RegisterDto> registrationValidator,
-        IValidator<LoginDto> loginValidator,
+        IValidationPipeline validationPipeline,
         IGoogleJsonWebSignatureWrapper googleSignature)
     {
         _userManager = userManager;
         _jwtTokenGenerator = jwtTokenGenerator;
-        _registrationValidator = registrationValidator;
-        _loginValidator = loginValidator;
+        _validationPipeline = validationPipeline;
         _googleSignature = googleSignature;
     }
 
     public async Task<AuthResultDto> RegisterAsync(RegisterDto registerDto, CancellationToken cancellationToken = default)
     {
-        var validationResponse = await ValidateRequestAsync(registerDto, _registrationValidator, cancellationToken);
-        if (validationResponse != null) return validationResponse;
+        var validationResult = await ValidateOrReturnErrorsAsync(registerDto, cancellationToken);
+        if (validationResult != null)
+            return validationResult;
 
         var user = new User
         {
@@ -64,8 +62,9 @@ public class AuthService : IAuthService
 
     public async Task<AuthResultDto> LoginAsync(LoginDto loginDto, CancellationToken cancellationToken = default)
     {
-        var validationResponse = await ValidateRequestAsync(loginDto, _loginValidator, cancellationToken);
-        if (validationResponse != null) return validationResponse;
+        var validationResult = await ValidateOrReturnErrorsAsync(loginDto, cancellationToken);
+        if (validationResult != null)
+            return validationResult;
 
         var user = await _userManager.FindByEmailAsync(loginDto.Email);
         if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password))
@@ -92,29 +91,33 @@ public class AuthService : IAuthService
 
             var result = await _userManager.CreateAsync(user);
             if (!result.Succeeded)
+            {
                 return new AuthResultDto
                 {
                     Success = false,
                     Errors = result.Errors.Select(error => error.Description)
                 };
+            }
         }
 
         var token = _jwtTokenGenerator.GenerateToken(user.Id, user.Email);
         return new AuthResultDto() { Success = true, Token = token };
     }
 
-    private static async Task<AuthResultDto> ValidateRequestAsync<T>(T request, IValidator<T> validator, CancellationToken cancellationToken)
+    private async Task<AuthResultDto?> ValidateOrReturnErrorsAsync<TRequest>(TRequest request, CancellationToken cancellationToken)
     {
-        var validationResponse = await validator.ValidateAsync(request, cancellationToken);
-        if (!validationResponse.IsValid)
+        try
+        {
+            await _validationPipeline.ExecuteAsync(request, cancellationToken);
+            return null;
+        }
+        catch (ValidationException exception)
         {
             return new AuthResultDto
             {
                 Success = false,
-                Errors = validationResponse.Errors.Select(error => error.ErrorMessage)
+                Errors = exception.Errors.Select(error => error.ErrorMessage)
             };
         }
-
-        return null;
     }
 }

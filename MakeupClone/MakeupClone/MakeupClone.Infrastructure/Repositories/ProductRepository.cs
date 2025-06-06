@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MakeupClone.Application.Interfaces;
+using MakeupClone.Domain.Common;
 using MakeupClone.Domain.Entities;
 using MakeupClone.Domain.Filters;
 using MakeupClone.Infrastructure.Data;
@@ -72,7 +73,7 @@ public class ProductRepository : IProductRepository
         _dbContext.Products.Remove(existingProduct);
     }
 
-    public async Task<(IEnumerable<Product> Items, int TotalCount)> GetByFilterAsync(ProductFilter filter, CancellationToken cancellationToken)
+    public async Task<UnpagedResult<Product>> GetByFilterAsync(ProductFilter filter, CancellationToken cancellationToken)
     {
         IQueryable<ProductEntity> query = _dbContext.Products
             .Include(product => product.Category)
@@ -111,7 +112,7 @@ public class ProductRepository : IProductRepository
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        return (products, totalCount);
+        return new UnpagedResult<Product>(products, totalCount);
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken)

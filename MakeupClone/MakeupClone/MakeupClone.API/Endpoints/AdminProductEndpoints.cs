@@ -1,28 +1,37 @@
-﻿using MakeupClone.Application.Interfaces;
+﻿using MakeupClone.API.Constants;
+using MakeupClone.Application.Interfaces;
 using MakeupClone.Domain.Entities;
 
 namespace MakeupClone.API.Endpoints;
 
 public static class AdminProductEndpoints
 {
-    public static void MapAdminProductEndpoints(this WebApplication app)
+    public static void MapAdminProductEndpoints(this WebApplication application)
     {
-        var group = app.MapGroup("/api/admin/products")
+        var group = application.MapGroup(ApiRoutes.AdminProducts.Base)
             .RequireAuthorization("AdminPolicy");
 
-        group.MapGet("/{id}", GetProductByIdAsync);
-        group.MapPost("/", AddProductAsync);
-        group.MapPut("/{id}", UpdateProductAsync);
-        group.MapDelete("/{id}", DeleteProductAsync);
-        group.MapPost("/{id}/discount", AddDiscountAsync);
-        group.MapPut("/{id}/discount", UpdateDiscountAsync);
-        group.MapDelete("/{id}/discount", RemoveDiscountAsync);
+        group.MapGet(ApiRoutes.AdminProducts.GetById, GetProductByIdAsync);
+        group.MapGet(ApiRoutes.AdminProducts.GetAll, GetAllProductsAsync);
+        group.MapPost(ApiRoutes.AdminProducts.Create, AddProductAsync);
+        group.MapPut(ApiRoutes.AdminProducts.Update, UpdateProductAsync);
+        group.MapDelete(ApiRoutes.AdminProducts.Delete, DeleteProductAsync);
+
+        group.MapPost(ApiRoutes.AdminProducts.AddDiscount, AddDiscountAsync);
+        group.MapPut(ApiRoutes.AdminProducts.UpdateDiscount, UpdateDiscountAsync);
+        group.MapDelete(ApiRoutes.AdminProducts.RemoveDiscount, RemoveDiscountAsync);
     }
 
     private static async Task<IResult> GetProductByIdAsync(IAdminProductService adminProductService, Guid id, CancellationToken cancellationToken)
     {
         var product = await adminProductService.GetProductByIdAsync(id, cancellationToken);
         return Results.Ok(product);
+    }
+
+    private static async Task<IResult> GetAllProductsAsync(IAdminProductService adminProductService, CancellationToken cancellationToken)
+    {
+        var products = await adminProductService.GetAllProductsAsync(cancellationToken);
+        return Results.Ok(products);
     }
 
     private static async Task<IResult> AddProductAsync(IAdminProductService adminProductService, Product product, CancellationToken cancellationToken)

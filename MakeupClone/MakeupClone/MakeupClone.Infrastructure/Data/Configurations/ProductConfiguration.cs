@@ -19,10 +19,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<ProductEntity>
         builder.Property(product => product.Price)
                .IsRequired();
 
-        builder.Property(product => product.StockQuantity);
-
-        builder.Property(product => product.ImageUrl);
-
         builder.HasOne(product => product.Category)
                .WithMany(category => category.Products)
                .HasForeignKey(product => product.CategoryId);

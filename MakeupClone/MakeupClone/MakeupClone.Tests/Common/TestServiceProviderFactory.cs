@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using FluentValidation;
+﻿using FluentValidation;
 using MakeupClone.Application.Interfaces;
 using MakeupClone.Application.Services;
 using MakeupClone.Application.Validators;
@@ -60,12 +59,7 @@ public static class TestServiceProviderFactory
 
     private static void AddAutoMapper(IServiceCollection services)
     {
-        var mapperConfig = new MapperConfiguration(configuration =>
-        {
-            configuration.AddProfile<MappingProfile>();
-        });
-
-        services.AddSingleton(mapperConfig.CreateMapper());
+        services.AddAutoMapper(typeof(ProductMappingProfile).Assembly);
     }
 
     private static void AddValidators(IServiceCollection services)
@@ -106,7 +100,7 @@ public static class TestServiceProviderFactory
     private static void AddAdminProductServices(IServiceCollection services)
     {
         services.AddScoped<IProductRepository, ProductRepository>();
-        services.AddScoped<IValidationService, ValidationService>();
+        services.AddScoped<IValidationPipeline, ValidationPipeline>();
         services.AddScoped<IAdminProductService, AdminProductService>();
     }
 }

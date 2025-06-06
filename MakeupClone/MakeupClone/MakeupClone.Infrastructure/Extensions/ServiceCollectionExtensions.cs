@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MakeupClone.Application.Interfaces;
+using MakeupClone.Application.Services;
 using MakeupClone.Application.Validators;
 using MakeupClone.Domain.Entities;
 using MakeupClone.Infrastructure.Data;
@@ -74,8 +75,9 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddCustomValidators(this IServiceCollection services)
+    public static IServiceCollection AddValidation(this IServiceCollection services)
     {
+        services.AddScoped<IValidationPipeline, ValidationPipeline>();
         services.AddValidatorsFromAssemblyContaining<RegisterValidator>();
 
         return services;

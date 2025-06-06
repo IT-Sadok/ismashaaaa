@@ -1,17 +1,19 @@
-﻿using MakeupClone.Application.Interfaces;
-using MakeupClone.Domain.Filters;
+﻿using MakeupClone.API.Constants;
+using MakeupClone.Application.Helpers;
+using MakeupClone.Application.Interfaces;
 
 namespace MakeupClone.API.Endpoints;
 
 public static class CategoryEndpoints
 {
-    public static void MapCategoryEndpoints(this WebApplication app)
+    public static void MapCategoryEndpoints(this WebApplication application)
     {
-        app.MapGet("/api/categories/filter", GetFilteredCategoriesAsync);
+        application.MapGet(ApiRoutes.Categories.Filter, GetFilteredCategoriesAsync);
     }
 
-    private static async Task<IResult> GetFilteredCategoriesAsync(ICategoryService categoryService, [AsParameters] PagingAndSortingFilter filter, CancellationToken cancellationToken)
+    private static async Task<IResult> GetFilteredCategoriesAsync(ICategoryService categoryService, int pageNumber, int pageSize, string? sortBy, bool descending, CancellationToken cancellationToken)
     {
+        var filter = FilterBuilder.Build(pageNumber, pageSize, sortBy, descending);
         var categories = await categoryService.GetCategoriesByFilterAsync(filter, cancellationToken);
         return Results.Ok(categories);
     }

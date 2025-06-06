@@ -1,15 +1,16 @@
-﻿using MakeupClone.Application.DTOs.Auth;
+﻿using MakeupClone.API.Constants;
+using MakeupClone.Application.DTOs.Auth;
 using MakeupClone.Application.Interfaces;
 
 namespace MakeupClone.API.Endpoints;
 
 public static class AuthEndpoints
 {
-    public static void MapAuthEndpoints(this WebApplication app)
+    public static void MapAuthEndpoints(this WebApplication application)
     {
-        app.MapPost("/api/auth/register", RegisterAsync);
-        app.MapPost("/api/auth/login", LoginAsync);
-        app.MapPost("/api/auth/google-login", GoogleLoginAsync);
+        application.MapPost(ApiRoutes.Auth.Register, RegisterAsync);
+        application.MapPost(ApiRoutes.Auth.Login, LoginAsync);
+        application.MapPost(ApiRoutes.Auth.GoogleLogin, GoogleLoginAsync);
     }
 
     private static async Task<IResult> RegisterAsync(IAuthService authService, RegisterDto registerDto, CancellationToken cancellationToken)

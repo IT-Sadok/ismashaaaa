@@ -7,12 +7,12 @@ namespace MakeupClone.Application.Services;
 public class AdminProductService : IAdminProductService
 {
     private readonly IProductRepository _productRepository;
-    private readonly IValidationService _validationService;
+    private readonly IValidationPipeline _validationPipeline;
 
-    public AdminProductService(IProductRepository productRepository, IValidationService validationService)
+    public AdminProductService(IProductRepository productRepository, IValidationPipeline validationPipeline)
     {
         _productRepository = productRepository;
-        _validationService = validationService;
+        _validationPipeline = validationPipeline;
     }
 
     public async Task<Product> GetProductByIdAsync(Guid id, CancellationToken cancellationToken)
@@ -27,7 +27,7 @@ public class AdminProductService : IAdminProductService
 
     public async Task AddProductAsync(Product product, CancellationToken cancellationToken)
     {
-        _validationService.ValidateAndThrow(product);
+        await _validationPipeline.ExecuteAsync(product, cancellationToken);
 
         await _productRepository.AddAsync(product, cancellationToken);
         await _productRepository.SaveChangesAsync(cancellationToken);
@@ -35,7 +35,7 @@ public class AdminProductService : IAdminProductService
 
     public async Task UpdateProductAsync(Product product, CancellationToken cancellationToken)
     {
-        _validationService.ValidateAndThrow(product);
+        await _validationPipeline.ExecuteAsync(product, cancellationToken);
 
         await EnsureProductExistsAsync(product.Id, cancellationToken);
         await _productRepository.UpdateAsync(product, cancellationToken);

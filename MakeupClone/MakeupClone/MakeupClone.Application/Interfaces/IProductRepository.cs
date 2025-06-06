@@ -1,4 +1,5 @@
-﻿using MakeupClone.Domain.Entities;
+﻿using MakeupClone.Domain.Common;
+using MakeupClone.Domain.Entities;
 using MakeupClone.Domain.Filters;
 
 namespace MakeupClone.Application.Interfaces;
@@ -15,7 +16,7 @@ public interface IProductRepository
 
     Task DeleteAsync(Guid id, CancellationToken cancellationToken);
 
-    Task<(IEnumerable<Product> Items, int TotalCount)> GetByFilterAsync(ProductFilter filter, CancellationToken cancellationToken);
+    Task<UnpagedResult<Product>> GetByFilterAsync(ProductFilter filter, CancellationToken cancellationToken);
 
     Task SaveChangesAsync(CancellationToken cancellationToken);
 }

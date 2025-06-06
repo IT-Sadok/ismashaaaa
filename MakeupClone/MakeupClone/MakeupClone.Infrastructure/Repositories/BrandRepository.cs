@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MakeupClone.Application.Interfaces;
+using MakeupClone.Domain.Common;
 using MakeupClone.Domain.Entities;
 using MakeupClone.Domain.Filters;
 using MakeupClone.Infrastructure.Data;
@@ -20,7 +21,7 @@ public class BrandRepository : IBrandRepository
         _mapper = mapper;
     }
 
-    public async Task<(IEnumerable<Brand> Items, int TotalCount)> GetByFilterAsync(PagingAndSortingFilter filter, CancellationToken cancellationToken)
+    public async Task<UnpagedResult<Brand>> GetByFilterAsync(PagingAndSortingFilter filter, CancellationToken cancellationToken)
     {
         IQueryable<BrandEntity> query = _dbContext.Brands;
 
@@ -33,6 +34,6 @@ public class BrandRepository : IBrandRepository
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-        return (brands, totalCount);
+        return new UnpagedResult<Brand>(brands, totalCount);
     }
 }

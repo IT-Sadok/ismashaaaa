@@ -9,23 +9,23 @@ namespace MakeupClone.Application.Services;
 public class BrandService : IBrandService
 {
     private readonly IBrandRepository _brandRepository;
-    private readonly IValidationService _validationService;
+    private readonly IValidationPipeline _validationPipeline;
 
-    public BrandService(IBrandRepository brandRepository, IValidationService validationService)
+    public BrandService(IBrandRepository brandRepository, IValidationPipeline validationPipeline)
     {
         _brandRepository = brandRepository;
-        _validationService = validationService;
+        _validationPipeline = validationPipeline;
     }
 
     public async Task<PagedResult<Brand>> GetBrandsByFilterAsync(PagingAndSortingFilter filter, CancellationToken cancellationToken)
     {
-        _validationService.ValidateAndThrow(filter);
+        await _validationPipeline.ExecuteAsync(filter, cancellationToken);
 
-        var (items, totalCount) = await _brandRepository.GetByFilterAsync(filter, cancellationToken);
+        var unpagedResult = await _brandRepository.GetByFilterAsync(filter, cancellationToken);
 
         int pageSize = filter.Take;
         int pageNumber = PaginationHelper.CalculatePageNumber(filter.Skip, pageSize);
 
-        return new PagedResult<Brand>(items, totalCount, pageNumber, pageSize);
+        return new PagedResult<Brand>(unpagedResult.Items, unpagedResult.TotalCount, pageNumber, pageSize);
     }
 }

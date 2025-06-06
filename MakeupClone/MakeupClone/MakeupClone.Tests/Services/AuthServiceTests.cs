@@ -1,9 +1,7 @@
-﻿using FluentValidation;
-using Google.Apis.Auth;
+﻿using Google.Apis.Auth;
 using MakeupClone.Application.DTOs.Auth;
 using MakeupClone.Application.Interfaces;
 using MakeupClone.Application.Services;
-using MakeupClone.Application.Validators;
 using MakeupClone.Domain.Entities;
 using MakeupClone.Domain.Enums;
 using MakeupClone.Infrastructure.Data;
@@ -20,8 +18,7 @@ public class AuthServiceTests : IAsyncLifetime
     private readonly UserManager<User> _userManager;
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly Mock<IGoogleJsonWebSignatureWrapper> _googleJsonWebSignatureWrapper;
-    private readonly IValidator<RegisterDto> _registrationValidator;
-    private readonly IValidator<LoginDto> _loginValidator;
+    private readonly IValidationPipeline _validationPipeline;
     private readonly MakeupCloneDbContext _dbContext;
     private readonly ServiceProvider _serviceProvider;
 
@@ -32,8 +29,7 @@ public class AuthServiceTests : IAsyncLifetime
         _dbContext = _serviceProvider.GetRequiredService<MakeupCloneDbContext>();
         _userManager = _serviceProvider.GetRequiredService<UserManager<User>>();
         _jwtTokenGenerator = _serviceProvider.GetRequiredService<IJwtTokenGenerator>();
-        _registrationValidator = new RegisterValidator();
-        _loginValidator = new LoginValidator();
+        _validationPipeline = _serviceProvider.GetRequiredService<IValidationPipeline>();
 
         _googleJsonWebSignatureWrapper = _serviceProvider.GetRequiredService<Mock<IGoogleJsonWebSignatureWrapper>>();
         var googleWrapper = _googleJsonWebSignatureWrapper.Object;
@@ -41,8 +37,7 @@ public class AuthServiceTests : IAsyncLifetime
         _authService = new AuthService(
             _userManager,
             _jwtTokenGenerator,
-            _registrationValidator,
-            _loginValidator,
+            _validationPipeline,
             googleWrapper);
     }
 
