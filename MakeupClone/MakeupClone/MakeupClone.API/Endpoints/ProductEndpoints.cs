@@ -8,8 +8,10 @@ public static class ProductEndpoints
 {
     public static void MapProductEndpoints(this WebApplication application)
     {
-        application.MapGet(ApiRoutes.Products.GetAll, GetAllProductsAsync);
-        application.MapGet(ApiRoutes.Products.Filter, GetFilteredProductsAsync);
+        var group = application.MapGroup(ApiRoutes.Products.Base);
+
+        group.MapGet(ApiRoutes.Products.GetAll, GetAllProductsAsync);
+        group.MapGet(ApiRoutes.Products.Filter, GetFilteredProductsAsync);
     }
 
     private static async Task<IResult> GetAllProductsAsync(IAdminProductService adminProductService, CancellationToken cancellationToken)

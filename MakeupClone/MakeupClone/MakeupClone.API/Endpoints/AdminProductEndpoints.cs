@@ -40,7 +40,7 @@ public static class AdminProductEndpoints
         return Results.Created($"/api/admin/products/{product.Id}", product);
     }
 
-    private static async Task<IResult> UpdateProductAsync(IAdminProductService adminProductService, Guid id, Product product, CancellationToken cancellationToken)
+    private static async Task<IResult> UpdateProductAsync(IAdminProductService adminProductService, Product product, CancellationToken cancellationToken)
     {
         await adminProductService.UpdateProductAsync(product, cancellationToken);
         return Results.NoContent();

@@ -8,9 +8,11 @@ public static class AuthEndpoints
 {
     public static void MapAuthEndpoints(this WebApplication application)
     {
-        application.MapPost(ApiRoutes.Auth.Register, RegisterAsync);
-        application.MapPost(ApiRoutes.Auth.Login, LoginAsync);
-        application.MapPost(ApiRoutes.Auth.GoogleLogin, GoogleLoginAsync);
+        var group = application.MapGroup(ApiRoutes.Auth.Base);
+
+        group.MapPost(ApiRoutes.Auth.Register, RegisterAsync);
+        group.MapPost(ApiRoutes.Auth.Login, LoginAsync);
+        group.MapPost(ApiRoutes.Auth.GoogleLogin, GoogleLoginAsync);
     }
 
     private static async Task<IResult> RegisterAsync(IAuthService authService, RegisterDto registerDto, CancellationToken cancellationToken)
