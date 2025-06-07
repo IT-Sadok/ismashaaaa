@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeupClone.API", "MakeupClone.API\MakeupClone.API.csproj", "{B684F66E-873B-45F6-966C-74A9A22E57FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeupClone.Application", "MakeupClone.Application\MakeupClone.Application.csproj", "{D4530310-AB9F-4647-86C4-FD2D9BB5582F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeupClone.Domain", "MakeupClone.Domain\MakeupClone.Domain.csproj", "{9145DD0F-0EBB-48B3-B37E-E55384BE0071}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeupClone.Infrastructure", "MakeupClone.Infrastructure\MakeupClone.Infrastructure.csproj", "{D0EE4B9E-1962-40C6-A97E-395008E79C45}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeupClone.Tests", "MakeupClone.Tests\MakeupClone.Tests.csproj", "{15F38D94-BE99-47F3-96D6-C2397C71AC8F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B684F66E-873B-45F6-966C-74A9A22E57FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B684F66E-873B-45F6-966C-74A9A22E57FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B684F66E-873B-45F6-966C-74A9A22E57FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B684F66E-873B-45F6-966C-74A9A22E57FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4530310-AB9F-4647-86C4-FD2D9BB5582F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4530310-AB9F-4647-86C4-FD2D9BB5582F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4530310-AB9F-4647-86C4-FD2D9BB5582F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4530310-AB9F-4647-86C4-FD2D9BB5582F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9145DD0F-0EBB-48B3-B37E-E55384BE0071}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9145DD0F-0EBB-48B3-B37E-E55384BE0071}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9145DD0F-0EBB-48B3-B37E-E55384BE0071}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9145DD0F-0EBB-48B3-B37E-E55384BE0071}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0EE4B9E-1962-40C6-A97E-395008E79C45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0EE4B9E-1962-40C6-A97E-395008E79C45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0EE4B9E-1962-40C6-A97E-395008E79C45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0EE4B9E-1962-40C6-A97E-395008E79C45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15F38D94-BE99-47F3-96D6-C2397C71AC8F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15F38D94-BE99-47F3-96D6-C2397C71AC8F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15F38D94-BE99-47F3-96D6-C2397C71AC8F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15F38D94-BE99-47F3-96D6-C2397C71AC8F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2FC289CF-0DA0-4675-9845-D827C79CC086}
+	EndGlobalSection
+EndGlobal
