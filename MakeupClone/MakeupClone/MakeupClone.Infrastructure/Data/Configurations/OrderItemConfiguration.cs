@@ -8,8 +8,6 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItemEntity>
 {
     public void Configure(EntityTypeBuilder<OrderItemEntity> builder)
     {
-        builder.ToTable("OrderItems");
-
         builder.HasKey(orderItem => orderItem.OrderId);
 
         builder.Property(orderItem => orderItem.Quantity)

@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using MakeupClone.Application.Interfaces;
+﻿using MakeupClone.Application.Interfaces;
 using MakeupClone.Application.Services;
 using MakeupClone.Domain.Entities;
 using MakeupClone.Domain.Exceptions;
@@ -15,7 +14,6 @@ public class AdminProductServiceTests : IAsyncLifetime
 {
     private readonly MakeupCloneDbContext _dbContext;
     private readonly IProductRepository _productRepository;
-    private readonly IValidationPipeline _validationPipeline;
     private readonly AdminProductService _adminProductService;
     private readonly ServiceProvider _serviceProvider;
 
@@ -24,9 +22,8 @@ public class AdminProductServiceTests : IAsyncLifetime
         _serviceProvider = TestServiceProviderFactory.Create();
         _dbContext = _serviceProvider.GetRequiredService<MakeupCloneDbContext>();
         _productRepository = _serviceProvider.GetRequiredService<IProductRepository>();
-        _validationPipeline = _serviceProvider.GetRequiredService<IValidationPipeline>();
 
-        _adminProductService = new AdminProductService(_productRepository, _validationPipeline);
+        _adminProductService = new AdminProductService(_productRepository);
     }
 
     public async Task InitializeAsync()
@@ -51,33 +48,33 @@ public class AdminProductServiceTests : IAsyncLifetime
 
         var products = new[]
         {
-        new ProductEntity
-        {
-            Id = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-            Name = "Test Product 1",
-            Description = "Description for Product 1",
-            Price = 100,
-            StockQuantity = 5,
-            ImageUrl = "https://example.com/product1.jpg",
-            CategoryId = category.Id,
-            Category = category,
-            BrandId = brand.Id,
-            Brand = brand
-        },
-        new ProductEntity
-        {
-            Id = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-            Name = "Test Product 2",
-            Description = "Description for Product 2",
-            Price = 150,
-            StockQuantity = 10,
-            ImageUrl = "https://example.com/product2.jpg",
-            CategoryId = category.Id,
-            Category = category,
-            BrandId = brand.Id,
-            Brand = brand
-        }
-    };
+            new ProductEntity
+            {
+                Id = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                Name = "Test Product 1",
+                Description = "Description for Product 1",
+                Price = 100,
+                StockQuantity = 5,
+                ImageUrl = "https://example.com/product1.jpg",
+                CategoryId = category.Id,
+                Category = category,
+                BrandId = brand.Id,
+                Brand = brand
+            },
+            new ProductEntity
+            {
+                Id = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                Name = "Test Product 2",
+                Description = "Description for Product 2",
+                Price = 150,
+                StockQuantity = 10,
+                ImageUrl = "https://example.com/product2.jpg",
+                CategoryId = category.Id,
+                Category = category,
+                BrandId = brand.Id,
+                Brand = brand
+            }
+        };
 
         dbContext.Products.AddRange(products);
         await dbContext.SaveChangesAsync();
@@ -141,15 +138,6 @@ public class AdminProductServiceTests : IAsyncLifetime
 
         Assert.NotNull(result);
         Assert.Equal("New Product", result.Name);
-    }
-
-    [Fact]
-    public async Task AddProductAsync_WithInvalidProduct_ShouldThrowValidationException()
-    {
-        var invalidProduct = new Product();
-
-        await Assert.ThrowsAsync<ValidationException>(() =>
-            _adminProductService.AddProductAsync(invalidProduct, CancellationToken.None));
     }
 
     [Fact]

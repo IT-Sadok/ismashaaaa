@@ -1,4 +1,5 @@
 ﻿using MakeupClone.API.Constants;
+using MakeupClone.API.Filters;
 using MakeupClone.Application.Interfaces;
 using MakeupClone.Domain.Entities;
 
@@ -13,8 +14,10 @@ public static class AdminProductEndpoints
 
         group.MapGet(ApiRoutes.AdminProducts.GetById, GetProductByIdAsync);
         group.MapGet(ApiRoutes.AdminProducts.GetAll, GetAllProductsAsync);
-        group.MapPost(ApiRoutes.AdminProducts.Create, AddProductAsync);
-        group.MapPut(ApiRoutes.AdminProducts.Update, UpdateProductAsync);
+        group.MapPost(ApiRoutes.AdminProducts.Create, AddProductAsync)
+            .AddEndpointFilter<ValidationFilter<Product>>();
+        group.MapPut(ApiRoutes.AdminProducts.Update, UpdateProductAsync)
+            .AddEndpointFilter<ValidationFilter<Product>>();
         group.MapDelete(ApiRoutes.AdminProducts.Delete, DeleteProductAsync);
 
         group.MapPost(ApiRoutes.AdminProducts.AddDiscount, AddDiscountAsync);

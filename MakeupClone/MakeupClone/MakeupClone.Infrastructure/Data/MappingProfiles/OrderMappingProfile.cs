@@ -8,6 +8,8 @@ public class OrderMappingProfile : Profile
 {
     public OrderMappingProfile()
     {
-        CreateMap<Order, OrderEntity>().ReverseMap();
+        CreateMap<Order, OrderEntity>()
+            .ForMember(orderEntity => orderEntity.User, mappingOptions => mappingOptions.Ignore())
+            .ReverseMap();
     }
 }

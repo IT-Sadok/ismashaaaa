@@ -1,7 +1,4 @@
-﻿using FluentValidation;
-using MakeupClone.Application.Interfaces;
-using MakeupClone.Application.Services;
-using MakeupClone.Application.Validators;
+﻿using MakeupClone.Application.Interfaces;
 using MakeupClone.Domain.Entities;
 using MakeupClone.Infrastructure.Data;
 using MakeupClone.Infrastructure.Repositories;
@@ -71,14 +68,6 @@ public static class ServiceCollectionExtensions
         services.AddAuthorizationBuilder()
             .AddPolicy("AdminPolicy", policy =>
                 policy.RequireRole("Admin"));
-
-        return services;
-    }
-
-    public static IServiceCollection AddValidation(this IServiceCollection services)
-    {
-        services.AddScoped<IValidationPipeline, ValidationPipeline>();
-        services.AddValidatorsFromAssemblyContaining<RegisterValidator>();
 
         return services;
     }

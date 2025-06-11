@@ -1,5 +1,7 @@
-﻿using MakeupClone.Application.Interfaces;
+﻿using FluentValidation;
+using MakeupClone.Application.Interfaces;
 using MakeupClone.Application.Services;
+using MakeupClone.Application.Validators;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MakeupClone.Application.Extensions;
@@ -14,7 +16,13 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IBrandService, BrandService>();
         services.AddScoped<IOrderService, OrderService>();
-        services.AddScoped<IValidationPipeline, ValidationPipeline>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddValidation(this IServiceCollection services)
+    {
+        services.AddValidatorsFromAssemblyContaining<RegisterValidator>();
 
         return services;
     }

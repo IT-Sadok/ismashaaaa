@@ -1,4 +1,5 @@
 ﻿using MakeupClone.API.Constants;
+using MakeupClone.API.Filters;
 using MakeupClone.Application.DTOs.Auth;
 using MakeupClone.Application.Interfaces;
 
@@ -10,8 +11,10 @@ public static class AuthEndpoints
     {
         var group = application.MapGroup(ApiRoutes.Auth.Base);
 
-        group.MapPost(ApiRoutes.Auth.Register, RegisterAsync);
-        group.MapPost(ApiRoutes.Auth.Login, LoginAsync);
+        group.MapPost(ApiRoutes.Auth.Register, RegisterAsync)
+            .AddEndpointFilter<ValidationFilter<RegisterDto>>();
+        group.MapPost(ApiRoutes.Auth.Login, LoginAsync)
+            .AddEndpointFilter<ValidationFilter<LoginDto>>();
         group.MapPost(ApiRoutes.Auth.GoogleLogin, GoogleLoginAsync);
     }
 

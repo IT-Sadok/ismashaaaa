@@ -7,12 +7,10 @@ namespace MakeupClone.Application.Services;
 public class OrderService : IOrderService
 {
     private readonly IOrderRepository _orderRepository;
-    private readonly IValidationPipeline _validationPipeline;
 
-    public OrderService(IOrderRepository orderRepository, IValidationPipeline validationPipeline)
+    public OrderService(IOrderRepository orderRepository)
     {
         _orderRepository = orderRepository;
-        _validationPipeline = validationPipeline;
     }
 
     public async Task<Order> GetOrderByIdAsync(Guid id, CancellationToken cancellationToken)
@@ -27,16 +25,12 @@ public class OrderService : IOrderService
 
     public async Task AddOrderAsync(Order order, CancellationToken cancellationToken)
     {
-        await _validationPipeline.ExecuteAsync(order, cancellationToken);
-
         await _orderRepository.AddAsync(order, cancellationToken);
         await _orderRepository.SaveChangesAsync(cancellationToken);
     }
 
     public async Task UpdateOrderAsync(Order order, CancellationToken cancellationToken)
     {
-        await _validationPipeline.ExecuteAsync(order, cancellationToken);
-
         await EnsureOrderExistsAsync(order.Id, cancellationToken);
         await _orderRepository.UpdateAsync(order, cancellationToken);
         await _orderRepository.SaveChangesAsync(cancellationToken);

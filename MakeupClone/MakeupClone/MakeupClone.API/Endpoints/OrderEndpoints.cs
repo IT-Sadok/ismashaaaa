@@ -1,4 +1,5 @@
 ﻿using MakeupClone.API.Constants;
+using MakeupClone.API.Filters;
 using MakeupClone.Application.Interfaces;
 using MakeupClone.Domain.Entities;
 
@@ -13,8 +14,10 @@ public static class OrderEndpoints
 
         group.MapGet(ApiRoutes.Orders.GetById, GetOrderByIdAsync);
         group.MapGet(ApiRoutes.Orders.GetAll, GetAllOrdersAsync);
-        group.MapPost(ApiRoutes.Orders.Create, CreateOrderAsync);
-        group.MapPut(ApiRoutes.Orders.Update, UpdateOrderAsync);
+        group.MapPost(ApiRoutes.Orders.Create, CreateOrderAsync)
+            .AddEndpointFilter<ValidationFilter<Order>>();
+        group.MapPut(ApiRoutes.Orders.Update, UpdateOrderAsync)
+            .AddEndpointFilter<ValidationFilter<Order>>();
         group.MapDelete(ApiRoutes.Orders.Delete, DeleteOrderAsync);
     }
 

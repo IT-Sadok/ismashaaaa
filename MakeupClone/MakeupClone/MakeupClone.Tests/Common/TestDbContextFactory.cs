@@ -30,7 +30,9 @@ public static class TestDbContextFactory
             "Reviews",
             "Products",
             "Categories",
-            "Brands"
+            "Brands",
+            "Orders",
+            "Items"
         RESTART IDENTITY CASCADE;
     """);
     }
