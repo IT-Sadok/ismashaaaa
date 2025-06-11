@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using MakeupClone.Application.DTOs.Auth;
+﻿using MakeupClone.Application.DTOs.Auth;
 using MakeupClone.Application.Interfaces;
 using MakeupClone.Domain.Entities;
 using MakeupClone.Domain.Enums;
@@ -11,27 +10,20 @@ public class AuthService : IAuthService
 {
     private readonly UserManager<User> _userManager;
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
-    private readonly IValidationPipeline _validationPipeline;
     private readonly IGoogleJsonWebSignatureWrapper _googleSignature;
 
     public AuthService(
         UserManager<User> userManager,
         IJwtTokenGenerator jwtTokenGenerator,
-        IValidationPipeline validationPipeline,
         IGoogleJsonWebSignatureWrapper googleSignature)
     {
         _userManager = userManager;
         _jwtTokenGenerator = jwtTokenGenerator;
-        _validationPipeline = validationPipeline;
         _googleSignature = googleSignature;
     }
 
     public async Task<AuthResultDto> RegisterAsync(RegisterDto registerDto, CancellationToken cancellationToken = default)
     {
-        var validationResult = await ValidateOrReturnErrorsAsync(registerDto, cancellationToken);
-        if (validationResult != null)
-            return validationResult;
-
         var user = new User
         {
             FirstName = registerDto.FirstName,
@@ -62,10 +54,6 @@ public class AuthService : IAuthService
 
     public async Task<AuthResultDto> LoginAsync(LoginDto loginDto, CancellationToken cancellationToken = default)
     {
-        var validationResult = await ValidateOrReturnErrorsAsync(loginDto, cancellationToken);
-        if (validationResult != null)
-            return validationResult;
-
         var user = await _userManager.FindByEmailAsync(loginDto.Email);
         if (user == null || !await _userManager.CheckPasswordAsync(user, loginDto.Password))
             return new AuthResultDto { Success = false, Errors = new[] { "Invalid email or password." } };
@@ -102,22 +90,5 @@ public class AuthService : IAuthService
 
         var token = _jwtTokenGenerator.GenerateToken(user.Id, user.Email);
         return new AuthResultDto() { Success = true, Token = token };
-    }
-
-    private async Task<AuthResultDto?> ValidateOrReturnErrorsAsync<TRequest>(TRequest request, CancellationToken cancellationToken)
-    {
-        try
-        {
-            await _validationPipeline.ExecuteAsync(request, cancellationToken);
-            return null;
-        }
-        catch (ValidationException exception)
-        {
-            return new AuthResultDto
-            {
-                Success = false,
-                Errors = exception.Errors.Select(error => error.ErrorMessage)
-            };
-        }
     }
 }

@@ -30,7 +30,8 @@ public static class TestServiceProviderFactory
         AddConfiguration(services);
         AddJwtTokenGenerator(services);
         AddGoogleJsonWebSignatureMock(services);
-        AddAdminProductServices(services);
+        AddRepositories(services);
+        AddServices(services);
 
         return services.BuildServiceProvider();
     }
@@ -97,10 +98,15 @@ public static class TestServiceProviderFactory
             provider => provider.GetRequiredService<Mock<IGoogleJsonWebSignatureWrapper>>().Object);
     }
 
-    private static void AddAdminProductServices(IServiceCollection services)
+    private static void AddRepositories(IServiceCollection services)
     {
         services.AddScoped<IProductRepository, ProductRepository>();
-        services.AddScoped<IValidationPipeline, ValidationPipeline>();
+        services.AddScoped<IOrderRepository, OrderRepository>();
+    }
+
+    private static void AddServices(IServiceCollection services)
+    {
         services.AddScoped<IAdminProductService, AdminProductService>();
+        services.AddScoped<IOrderService, OrderService>();
     }
 }

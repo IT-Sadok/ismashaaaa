@@ -19,6 +19,10 @@ public class MakeupCloneDbContext : IdentityDbContext<User, IdentityRole, string
 
     public DbSet<ReviewEntity> Reviews { get; set; }
 
+    public DbSet<OrderEntity> Orders { get; set; }
+
+    public DbSet<OrderItemEntity> Items { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

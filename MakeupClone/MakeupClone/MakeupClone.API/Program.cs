@@ -43,5 +43,6 @@ app.MapBrandEndpoints();
 app.MapCategoryEndpoints();
 app.MapAdminProductEndpoints();
 app.MapProductEndpoints();
+app.MapOrderEndpoints();
 
 app.Run();

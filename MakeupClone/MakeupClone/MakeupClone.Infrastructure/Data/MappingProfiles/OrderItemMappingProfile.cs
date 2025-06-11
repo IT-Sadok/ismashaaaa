@@ -4,10 +4,10 @@ using MakeupClone.Infrastructure.Data.Entities;
 
 namespace MakeupClone.Infrastructure.Data.MappingProfiles;
 
-public class CategoryMappingProfile : Profile
+public class OrderItemMappingProfile : Profile
 {
-    public CategoryMappingProfile()
+    public OrderItemMappingProfile()
     {
-        CreateMap<Category, CategoryEntity>().ReverseMap();
+        CreateMap<OrderItem, OrderItemEntity>().ReverseMap();
     }
 }

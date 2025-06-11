@@ -9,12 +9,10 @@ namespace MakeupClone.Application.Services;
 public class ProductService : IProductService
 {
     private readonly IProductRepository _productRepository;
-    private readonly IValidationPipeline _validationPipeline;
 
-    public ProductService(IProductRepository productRepository, IValidationPipeline validationPipeline)
+    public ProductService(IProductRepository productRepository)
     {
         _productRepository = productRepository;
-        _validationPipeline = validationPipeline;
     }
 
     public async Task<IEnumerable<Product>> GetAllProductsAsync(CancellationToken cancellationToken)
@@ -24,8 +22,6 @@ public class ProductService : IProductService
 
     public async Task<PagedResult<Product>> GetProductsByFilterAsync(ProductFilter filter, CancellationToken cancellationToken)
     {
-        await _validationPipeline.ExecuteAsync(filter, cancellationToken);
-
         var unpagedResult = await _productRepository.GetByFilterAsync(filter, cancellationToken);
 
         int pageSize = filter.Take;
