@@ -14,12 +14,22 @@ public class OrderConfiguration : IEntityTypeConfiguration<OrderEntity>
             .IsRequired();
 
         builder.Property(order => order.Status)
-            .HasConversion<string>()
+            .HasConversion<int>()
             .IsRequired();
 
         builder.HasMany(order => order.Items)
             .WithOne(item => item.Order)
             .HasForeignKey(item => item.OrderId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(order => order.PaymentInformation)
+            .WithOne()
+            .HasForeignKey<OrderEntity>(order => order.PaymentInformationId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasOne(order => order.DeliveryInformation)
+             .WithOne()
+             .HasForeignKey<OrderEntity>(order => order.DeliveryInformationId)
+             .OnDelete(DeleteBehavior.SetNull);
     }
 }

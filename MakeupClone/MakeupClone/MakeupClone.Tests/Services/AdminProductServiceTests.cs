@@ -5,6 +5,7 @@ using MakeupClone.Domain.Exceptions;
 using MakeupClone.Infrastructure.Data;
 using MakeupClone.Infrastructure.Data.Entities;
 using MakeupClone.Tests.Common;
+using MakeupClone.Tests.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -50,7 +51,7 @@ public class AdminProductServiceTests : IAsyncLifetime
         {
             new ProductEntity
             {
-                Id = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                Id = TestConstants.DefaultFirstTestId,
                 Name = "Test Product 1",
                 Description = "Description for Product 1",
                 Price = 100,
@@ -63,7 +64,7 @@ public class AdminProductServiceTests : IAsyncLifetime
             },
             new ProductEntity
             {
-                Id = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                Id = TestConstants.DefaultSecondTestId,
                 Name = "Test Product 2",
                 Description = "Description for Product 2",
                 Price = 150,
@@ -83,7 +84,7 @@ public class AdminProductServiceTests : IAsyncLifetime
     [Fact]
     public async Task GetProductByIdAsync_WithExistingId_ShouldReturnProduct()
     {
-        var existingProductId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+        var existingProductId = TestConstants.DefaultSecondTestId;
 
         var result = await _adminProductService.GetProductByIdAsync(existingProductId, CancellationToken.None);
 
@@ -189,7 +190,7 @@ public class AdminProductServiceTests : IAsyncLifetime
     [Fact]
     public async Task DeleteProductAsync_WithValidId_ShouldDeleteSuccessfully()
     {
-        var productId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        var productId = TestConstants.DefaultFirstTestId;
 
         await _adminProductService.DeleteProductAsync(productId, CancellationToken.None);
 
@@ -212,7 +213,7 @@ public class AdminProductServiceTests : IAsyncLifetime
     [Fact]
     public async Task AddDiscountAsync_WithValidProductId_ShouldApplyDiscount()
     {
-        var productId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        var productId = TestConstants.DefaultFirstTestId;
         decimal discount = 20;
 
         await _adminProductService.AddDiscountAsync(productId, discount, CancellationToken.None);
@@ -237,7 +238,7 @@ public class AdminProductServiceTests : IAsyncLifetime
     [Fact]
     public async Task UpdateDiscountAsync_WithValidProductId_ShouldUpdateDiscount()
     {
-        var productId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        var productId = TestConstants.DefaultFirstTestId;
         decimal initialDiscount = 10;
         decimal updatedDiscount = 25;
 
@@ -265,7 +266,7 @@ public class AdminProductServiceTests : IAsyncLifetime
     [Fact]
     public async Task RemoveDiscountAsync_WithValidProductId_ShouldRemoveDiscount()
     {
-        var productId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+        var productId = TestConstants.DefaultSecondTestId;
         decimal discount = 30;
         await _adminProductService.AddDiscountAsync(productId, discount, CancellationToken.None);
 

@@ -6,6 +6,7 @@ using MakeupClone.Domain.Exceptions;
 using MakeupClone.Infrastructure.Data;
 using MakeupClone.Infrastructure.Data.Entities;
 using MakeupClone.Tests.Common;
+using MakeupClone.Tests.Constants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -57,7 +58,7 @@ public class OrderServiceTests : IAsyncLifetime
         {
             new OrderEntity
             {
-                Id = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                Id = TestConstants.DefaultFirstTestId,
                 UserId = user.Id,
                 User = user,
                 CreatedAt = DateTime.UtcNow,
@@ -66,7 +67,7 @@ public class OrderServiceTests : IAsyncLifetime
             },
             new OrderEntity
             {
-                Id = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                Id = TestConstants.DefaultSecondTestId,
                 UserId = user.Id,
                 User = user,
                 CreatedAt = DateTime.UtcNow.AddDays(-1),
@@ -81,7 +82,7 @@ public class OrderServiceTests : IAsyncLifetime
     [Fact]
     public async Task GetOrderByIdAsync_WithExistingId_ShouldReturnOrder()
     {
-        var existingOrderId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        var existingOrderId = TestConstants.DefaultFirstTestId;
 
         var result = await _orderService.GetOrderByIdAsync(existingOrderId, CancellationToken.None);
 
@@ -174,7 +175,7 @@ public class OrderServiceTests : IAsyncLifetime
     [Fact]
     public async Task DeleteOrderAsync_WithValidId_ShouldDeleteSuccessfully()
     {
-        var orderId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        var orderId = TestConstants.DefaultFirstTestId;
 
         await _orderService.DeleteOrderAsync(orderId, CancellationToken.None);
 
