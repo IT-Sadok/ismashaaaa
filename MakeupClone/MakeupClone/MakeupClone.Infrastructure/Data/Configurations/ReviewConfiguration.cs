@@ -8,8 +8,6 @@ public class ReviewConfiguration : IEntityTypeConfiguration<ReviewEntity>
 {
     public void Configure(EntityTypeBuilder<ReviewEntity> builder)
     {
-        builder.ToTable("Reviews");
-
         builder.HasKey(review => review.Id);
 
         builder.Property(review => review.ProductId)

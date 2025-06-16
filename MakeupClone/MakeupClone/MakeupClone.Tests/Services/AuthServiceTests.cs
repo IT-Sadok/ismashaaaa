@@ -18,7 +18,6 @@ public class AuthServiceTests : IAsyncLifetime
     private readonly UserManager<User> _userManager;
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly Mock<IGoogleJsonWebSignatureWrapper> _googleJsonWebSignatureWrapper;
-    private readonly IValidationPipeline _validationPipeline;
     private readonly MakeupCloneDbContext _dbContext;
     private readonly ServiceProvider _serviceProvider;
 
@@ -29,7 +28,6 @@ public class AuthServiceTests : IAsyncLifetime
         _dbContext = _serviceProvider.GetRequiredService<MakeupCloneDbContext>();
         _userManager = _serviceProvider.GetRequiredService<UserManager<User>>();
         _jwtTokenGenerator = _serviceProvider.GetRequiredService<IJwtTokenGenerator>();
-        _validationPipeline = _serviceProvider.GetRequiredService<IValidationPipeline>();
 
         _googleJsonWebSignatureWrapper = _serviceProvider.GetRequiredService<Mock<IGoogleJsonWebSignatureWrapper>>();
         var googleWrapper = _googleJsonWebSignatureWrapper.Object;
@@ -37,7 +35,6 @@ public class AuthServiceTests : IAsyncLifetime
         _authService = new AuthService(
             _userManager,
             _jwtTokenGenerator,
-            _validationPipeline,
             googleWrapper);
     }
 
@@ -90,28 +87,6 @@ public class AuthServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task RegisterAsync_WithInvalidEmail_ShouldReturnValidationError()
-    {
-        var registerDto = CreateRegisterDto(email: "invalid-email");
-
-        var result = await _authService.RegisterAsync(registerDto, CancellationToken.None);
-
-        Assert.False(result.Success);
-        Assert.Contains("Invalid email format.", result.Errors);
-    }
-
-    [Fact]
-    public async Task RegisterAsync_WithShortPassword_ShouldReturnValidationError()
-    {
-        var registerDto = CreateRegisterDto(password: "123");
-
-        var result = await _authService.RegisterAsync(registerDto, CancellationToken.None);
-
-        Assert.False(result.Success);
-        Assert.Contains("Password must be at least 6 characters long.", result.Errors.FirstOrDefault());
-    }
-
-    [Fact]
     public async Task RegisterAsync_WithExistingEmail_ShouldReturnIdentityError()
     {
         var registerDto = CreateRegisterDto(email: "existing@example.com");
@@ -120,31 +95,6 @@ public class AuthServiceTests : IAsyncLifetime
 
         Assert.False(result.Success);
         Assert.Contains("is already taken", result.Errors.FirstOrDefault() ?? " ");
-    }
-
-    [Fact]
-    public async Task RegisterAsync_WithInvalidPhone_ShouldReturnValidationError()
-    {
-        var registerDto = CreateRegisterDto(phoneNumber: "123abc");
-
-        var result = await _authService.RegisterAsync(registerDto, CancellationToken.None);
-
-        Assert.False(result.Success);
-        Assert.Contains("Invalid phone number format.", result.Errors);
-    }
-
-    [Fact]
-    public async Task RegisterAsync_WithNullFields_ShouldReturnValidationErrors()
-    {
-        var registerDto = new RegisterDto();
-
-        var result = await _authService.RegisterAsync(registerDto, CancellationToken.None);
-
-        Assert.False(result.Success);
-        Assert.Contains("First name is required.", result.Errors);
-        Assert.Contains("Last name is required.", result.Errors);
-        Assert.Contains("Email is required.", result.Errors);
-        Assert.Contains("Password is required.", result.Errors);
     }
 
     [Fact]
@@ -159,17 +109,6 @@ public class AuthServiceTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task LoginAsync_WithInvalidEmail_ShouldReturnError()
-    {
-        var loginDto = CreateLoginDto(email: "invalid-email");
-
-        var result = await _authService.LoginAsync(loginDto, CancellationToken.None);
-
-        Assert.False(result.Success);
-        Assert.Contains("Invalid email format.", result.Errors);
-    }
-
-    [Fact]
     public async Task LoginAsync_WithWrongPassword_ShouldReturnError()
     {
         var loginDto = CreateLoginDto(email: "existing@example.com", password: "WrongPass123!");
@@ -178,18 +117,6 @@ public class AuthServiceTests : IAsyncLifetime
 
         Assert.False(result.Success);
         Assert.Contains("Invalid email or password", result.Errors.FirstOrDefault());
-    }
-
-    [Fact]
-    public async Task LoginAsync_WithMissingFields_ShouldReturnValidationErrors()
-    {
-        var loginDto = new LoginDto();
-
-        var result = await _authService.LoginAsync(loginDto, CancellationToken.None);
-
-        Assert.False(result.Success);
-        Assert.Contains("Email is required.", result.Errors);
-        Assert.Contains("Password is required.", result.Errors);
     }
 
     [Fact]

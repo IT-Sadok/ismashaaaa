@@ -8,8 +8,6 @@ public class BrandConfiguration : IEntityTypeConfiguration<BrandEntity>
 {
     public void Configure(EntityTypeBuilder<BrandEntity> builder)
     {
-        builder.ToTable("Brands");
-
         builder.HasKey(brand => brand.Id);
 
         builder.Property(brand => brand.Name)

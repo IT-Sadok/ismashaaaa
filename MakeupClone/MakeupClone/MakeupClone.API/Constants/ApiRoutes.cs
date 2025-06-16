@@ -2,25 +2,30 @@
 
 public static class ApiRoutes
 {
+    public const string Root = "/";
+    public const string ById = "/{id}";
+    public const string Discounts = "/{id}/discounts";
+
     public static class AdminProducts
     {
         public const string Base = "/api/admin/products";
-        public const string GetById = "/{id}";
-        public const string GetAll = "/";
-        public const string Create = "/";
-        public const string Update = "/{id}";
-        public const string Delete = "/{id}";
+        public const string GetById = ById;
+        public const string GetAll = Root;
+        public const string Create = Root;
+        public const string Update = ById;
+        public const string Delete = ById;
 
-        public const string AddDiscount = "/{id}/discounts";
-        public const string UpdateDiscount = "/{id}/discounts";
-        public const string RemoveDiscount = "/{id}/discounts";
+        public const string AddDiscount = Discounts;
+        public const string UpdateDiscount = Discounts;
+        public const string RemoveDiscount = Discounts;
     }
 
     public static class Auth
     {
-        public const string Register = "/api/auth/register";
-        public const string Login = "/api/auth/login";
-        public const string GoogleLogin = "/api/auth/google-login";
+        public const string Base = "/api/auth";
+        public const string Register = "/register";
+        public const string Login = "/login";
+        public const string GoogleLogin = "/google-login";
     }
 
     public static class Brands
@@ -35,7 +40,18 @@ public static class ApiRoutes
 
     public static class Products
     {
-        public const string GetAll = "/api/products";
-        public const string Filter = "/api/products/filter";
+        public const string Base = "/api/products";
+        public const string GetAll = Root;
+        public const string Filter = "/filter";
+    }
+
+    public static class Orders
+    {
+        public const string Base = "api/orders";
+        public const string GetById = ById;
+        public const string GetAll = Root;
+        public const string Create = Root;
+        public const string Update = ById;
+        public const string Delete = ById;
     }
 }
