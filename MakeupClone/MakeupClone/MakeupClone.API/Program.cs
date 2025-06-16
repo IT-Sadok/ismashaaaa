@@ -1,4 +1,5 @@
 using MakeupClone.API.Endpoints;
+using MakeupClone.API.Middleware;
 using MakeupClone.Application.Extensions;
 using MakeupClone.Application.Interfaces;
 using MakeupClone.Infrastructure.Data.MappingProfiles;
@@ -18,7 +19,9 @@ builder.Services
     .AddAuthorizationPolicies()
     .AddValidation()
     .AddRepositories()
-    .AddServices();
+    .AddServices()
+    .AddPaymentServices()
+    .AddDeliveryServices();
 
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IGoogleJsonWebSignatureWrapper, GoogleJsonWebSignatureWrapper>();
@@ -34,6 +37,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

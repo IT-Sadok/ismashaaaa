@@ -1,6 +1,9 @@
 ﻿using MakeupClone.Application.Interfaces;
+using MakeupClone.Application.Services;
 using MakeupClone.Domain.Entities;
 using MakeupClone.Infrastructure.Data;
+using MakeupClone.Infrastructure.Delivery;
+using MakeupClone.Infrastructure.Payments;
 using MakeupClone.Infrastructure.Repositories;
 using MakeupClone.Infrastructure.Settings;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -84,8 +87,25 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddConfigurationSettings(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<AdminAccountSettings>(
-            configuration.GetSection("AdminAccountSettings"));
+        services.Configure<AdminAccountSettings>(configuration.GetSection("AdminAccountSettings"));
+        services.Configure<StripeOptions>(configuration.GetSection("Stripe"));
+        services.Configure<NovaPoshtaOptions>(configuration.GetSection("NovaPoshta"));
+
+        return services;
+    }
+
+    public static IServiceCollection AddPaymentServices(this IServiceCollection services)
+    {
+        services.AddScoped<IPaymentService, StripePaymentService>();
+        return services;
+    }
+
+    public static IServiceCollection AddDeliveryServices(this IServiceCollection services)
+    {
+        services.AddHttpClient<NovaPoshtaProvider>();
+        services.AddScoped<IDeliveryProvider, NovaPoshtaProvider>();
+
+        services.AddScoped<IDeliveryService, DeliveryService>();
 
         return services;
     }

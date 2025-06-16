@@ -23,7 +23,10 @@ public class OrderRepository : IOrderRepository
     {
         var order = await _dbContext.Orders
             .Include(order => order.Items)
-            .ThenInclude(orderItem => orderItem.Product)
+                .ThenInclude(orderItem => orderItem.Product)
+            .Include(order => order.User)
+            .Include(order => order.PaymentInformation)
+            .Include(order => order.DeliveryInformation)
             .AsNoTracking()
             .FirstOrDefaultAsync(order => order.Id == id, cancellationToken);
 
@@ -34,7 +37,10 @@ public class OrderRepository : IOrderRepository
     {
         return await _dbContext.Orders
            .Include(order => order.Items)
-           .ThenInclude(orderItem => orderItem.Product)
+               .ThenInclude(orderItem => orderItem.Product)
+           .Include(order => order.User)
+           .Include(order => order.PaymentInformation)
+           .Include(order => order.DeliveryInformation)
            .ProjectTo<Order>(_mapper.ConfigurationProvider)
            .AsNoTracking()
            .ToListAsync(cancellationToken);
