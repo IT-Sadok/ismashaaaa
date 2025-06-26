@@ -33,10 +33,18 @@ public class StripePaymentService : IPaymentService
 
     public async Task<PaymentStatus> ConfirmPaymentAsync(string paymentIntentId, CancellationToken cancellationToken)
     {
-        var intent = await _paymentIntentService.GetAsync(paymentIntentId, cancellationToken: cancellationToken);
-
-        return MapStripeStatusToPaymentStatus(intent.Status);
+        try
+        {
+            var intent = await _paymentIntentService.GetAsync(paymentIntentId, cancellationToken: cancellationToken);
+            return MapStripeStatusToPaymentStatus(intent.Status);
+        }
+        catch (StripeException)
+        {
+            return PaymentStatus.Failed;
+        }
     }
+
+    public string GetProviderName() => "Stripe";
 
     private static string MapPaymentMethod(PaymentType paymentMethod) =>
         paymentMethod switch

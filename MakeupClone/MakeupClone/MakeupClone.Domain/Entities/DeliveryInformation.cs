@@ -20,5 +20,15 @@ public class DeliveryInformation
 
     public string? TrackingNumber { get; set; }
 
+    public double? WeightKg { get; set; }
+
+    public string? RecipientName { get; set; }
+
+    public decimal? DeclaredPrice { get; set; }
+
+    public PaymentType? PaymentMethod { get; set; }
+
+    public PayerType? Payer { get; set; }
+
     public Order Order { get; set; }
 }

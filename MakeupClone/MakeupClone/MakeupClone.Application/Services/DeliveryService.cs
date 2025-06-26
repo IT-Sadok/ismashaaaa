@@ -13,7 +13,7 @@ public class DeliveryService : IDeliveryService
 
     public Task<string> CreateDeliveryAsync(DeliveryRequestDto deliveryRequest, CancellationToken cancellationToken)
     {
-        var provider = GetProvider(deliveryRequest.deliveryType);
+        var provider = GetProvider(deliveryRequest.DeliveryType);
 
         return provider.CreateDeliveryAsync(deliveryRequest, cancellationToken);
     }
@@ -28,7 +28,7 @@ public class DeliveryService : IDeliveryService
     private IDeliveryProvider GetProvider(DeliveryType deliveryType)
     {
         if (!_providers.TryGetValue(deliveryType, out var provider))
-            throw new NotSupportedException($"Delivery deliveryType {deliveryType} not supported.");
+            throw new NotSupportedException($"Delivery DeliveryType {deliveryType} not supported.");
 
         return provider;
     }

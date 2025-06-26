@@ -33,10 +33,10 @@ public static class OrderEndpoints
         return Results.Ok(orders);
     }
 
-    private static async Task<IResult> CreateOrderAsync(IOrderService orderService, Order order, CancellationToken cancellationToken)
+    private static async Task<IResult> CreateOrderAsync(IOrderProcessingService orderProcessingService, Order order, CancellationToken cancellationToken)
     {
-        await orderService.AddOrderAsync(order, cancellationToken);
-        return Results.Created($"/api/orders/{order.Id}", order);
+        var orderId = await orderProcessingService.ProcessOrderAsync(order, cancellationToken);
+        return Results.Created($"/api/orders/{orderId}", new { Id = orderId });
     }
 
     private static async Task<IResult> UpdateOrderAsync(IOrderService orderService, Order order, CancellationToken cancellationToken)

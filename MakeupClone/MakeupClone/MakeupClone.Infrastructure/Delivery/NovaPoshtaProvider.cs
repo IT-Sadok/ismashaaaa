@@ -1,9 +1,10 @@
 ﻿using System.Globalization;
-using System.Net.Http.Json;
 using MakeupClone.Application.DTOs.Delivery;
 using MakeupClone.Application.DTOs.Delivery.NovaPoshta;
 using MakeupClone.Application.Interfaces;
 using MakeupClone.Domain.Enums;
+using MakeupClone.Infrastructure.Delivery.Clients.Interfaces;
+using MakeupClone.Infrastructure.Delivery.Constants;
 using MakeupClone.Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 
@@ -13,12 +14,12 @@ public class NovaPoshtaProvider : IDeliveryProvider
 {
     public DeliveryType DeliveryType => DeliveryType.NovaPoshta;
 
-    private readonly HttpClient _httpClient;
+    private readonly INovaPoshtaClient _novaPoshtaClient;
     private readonly NovaPoshtaOptions _options;
 
-    public NovaPoshtaProvider(HttpClient httpClient, IOptions<NovaPoshtaOptions> options)
+    public NovaPoshtaProvider(INovaPoshtaClient novaPoshtaClient, IOptions<NovaPoshtaOptions> options)
     {
-        _httpClient = httpClient;
+        _novaPoshtaClient = novaPoshtaClient;
         _options = options.Value;
     }
 
@@ -27,38 +28,49 @@ public class NovaPoshtaProvider : IDeliveryProvider
         var cityReference = await GetCityRefAsync(deliveryRequest.City, cancellationToken)
             ?? throw new InvalidOperationException($"City '{deliveryRequest.City}' not found in Nova Poshta.");
 
-        var payload = BuildPayload("InternetDocument", "save", new CreateInternetDocumentPropertiesDto
+        var warehouseReference = await GetWarehouseRefAsync(cityReference, deliveryRequest.Address, cancellationToken)
+            ?? throw new InvalidOperationException($"Address '{deliveryRequest.Address}' not found in Nova Poshta.");
+
+        var payload = BuildPayload(NovaPoshtaConstants.ModelInternetDocument, NovaPoshtaConstants.MethodSave, new CreateInternetDocumentPropertiesDto
         {
             CitySender = _options.CitySenderRef,
-            CityRecipient = cityReference,
+            Sender = _options.SenderRef,
+            SenderAddress = _options.SenderWarehouseRef,
+            ContactSender = _options.SenderContactRef,
+            SendersPhone = deliveryRequest.SendersPhoneNumber,
+            RecipientCityRef = cityReference,
+            RecipientWarehouseRef = warehouseReference,
+            RecipientName = deliveryRequest.RecipientName,
+            RecipientContactName = deliveryRequest.RecipientName!,
+            RecipientsPhone = deliveryRequest.RecipientsPhoneNumber,
+            PayerType = deliveryRequest.Payer.ToString(),
+            PaymentMethod = deliveryRequest.DeliveryPaymentMethod,
             Weight = deliveryRequest.WeightKg.ToString("F2", CultureInfo.InvariantCulture),
-            ServiceType = "WarehouseWarehouse",
-            PayerType = "Recipient",
-            CargoType = "Parcel",
-            RecipientAddress = deliveryRequest.Address,
-            ContactRecipient = deliveryRequest.PhoneNumber,
-            PhoneRecipient = deliveryRequest.PhoneNumber
+            ServiceType = NovaPoshtaConstants.ServiceTypeWarehouseToWarehouse,
+            CargoType = NovaPoshtaConstants.CargoTypeParcel,
+            Cost = (decimal)deliveryRequest.DeclaredPrice,
+            SeatsAmount = deliveryRequest.SeatsAmount,
+            Description = deliveryRequest.Description
         });
 
-        var response = await PostAsync<InternetDocumentDataDto>(payload, cancellationToken);
+        var response = await _novaPoshtaClient.PostAsync<CreateInternetDocumentPropertiesDto, InternetDocumentDataDto>(payload, cancellationToken);
+
         var documentNumber = response.Data.FirstOrDefault()?.InternalDocumentNumber;
 
         if (string.IsNullOrWhiteSpace(documentNumber))
-        {
             throw new InvalidOperationException("Failed to retrieve delivery document number.");
-        }
 
         return documentNumber;
     }
 
     public async Task<DeliveryTrackingInformationDto> TrackDeliveryAsync(string trackingNumber, CancellationToken cancellationToken)
     {
-        var payload = BuildPayload("TrackingDocument", "getStatusDocuments", new TrackingDocumentsPropertiesDto
+        var payload = BuildPayload(NovaPoshtaConstants.ModelTrackingDocument, NovaPoshtaConstants.MethodGetStatusDocuments, new TrackingDocumentsPropertiesDto
         {
             Documents = new[] { new DocumentDto { DocumentNumber = trackingNumber } }
         });
 
-        var response = await PostAsync<TrackingDataDto>(payload, cancellationToken);
+        var response = await _novaPoshtaClient.PostAsync<TrackingDocumentsPropertiesDto, TrackingDataDto>(payload, cancellationToken);
         var data = response.Data.FirstOrDefault()
             ?? throw new InvalidOperationException($"Tracking information not found for '{trackingNumber}'.");
 
@@ -72,13 +84,27 @@ public class NovaPoshtaProvider : IDeliveryProvider
 
     private async Task<string?> GetCityRefAsync(string cityName, CancellationToken cancellationToken)
     {
-        var payload = BuildPayload("Address", "getCities", new CitySearchPropertiesDto
+        var payload = BuildPayload(NovaPoshtaConstants.ModelAddress, NovaPoshtaConstants.MethodGetCities, new CitySearchPropertiesDto
         {
             FindByString = cityName
         });
 
-        var response = await PostAsync<CityDataDto>(payload, cancellationToken);
+        var response = await _novaPoshtaClient.PostAsync<CitySearchPropertiesDto, CityDataDto>(payload, cancellationToken);
         return response.Data.FirstOrDefault()?.CityReference;
+    }
+
+    private async Task<string?> GetWarehouseRefAsync(string cityReference, string address, CancellationToken cancellationToken)
+    {
+        var payload = BuildPayload(NovaPoshtaConstants.ModelAddress, NovaPoshtaConstants.MethodGetWarehouses, new WarehouseSearchPropertiesDto
+        {
+            CityRef = cityReference
+        });
+
+        var response = await _novaPoshtaClient.PostAsync<WarehouseSearchPropertiesDto, WarehouseDataDto>(payload, cancellationToken);
+
+        return response.Data
+            .FirstOrDefault(warehouseDataDto => warehouseDataDto.Description.Contains(address, StringComparison.OrdinalIgnoreCase))
+            ?.Ref;
     }
 
     private NovaPoshtaRequestDto<T> BuildPayload<T>(string modelName, string method, T methodProperties)
@@ -90,27 +116,5 @@ public class NovaPoshtaProvider : IDeliveryProvider
             CalledMethod = method,
             MethodProperties = methodProperties
         };
-    }
-
-    private async Task<NovaPoshtaResponseDto<TData>> PostAsync<TData>(object payload, CancellationToken cancellationToken)
-    {
-        var response = await _httpClient.PostAsJsonAsync(_options.ApiUrl, payload, cancellationToken);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            throw new HttpRequestException($"Nova Poshta API error: {response.StatusCode}. Content: {content}");
-        }
-
-        var result = await response.Content.ReadFromJsonAsync<NovaPoshtaResponseDto<TData>>(cancellationToken: cancellationToken)
-            ?? throw new InvalidOperationException("Empty or invalid response from Nova Poshta API.");
-
-        if (!result.Success)
-        {
-            var errors = string.Join(", ", result.Errors.Concat(result.Warnings));
-            throw new InvalidOperationException($"Nova Poshta API error: {errors}");
-        }
-
-        return result;
     }
 }
