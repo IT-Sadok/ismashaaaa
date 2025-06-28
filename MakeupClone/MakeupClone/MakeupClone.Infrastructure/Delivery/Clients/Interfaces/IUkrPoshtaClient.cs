@@ -1,8 +1,10 @@
-﻿namespace MakeupClone.Infrastructure.Delivery.Clients.Interfaces;
+﻿using MakeupClone.Application.DTOs.Delivery.UkrPoshta;
+
+namespace MakeupClone.Infrastructure.Delivery.Clients.Interfaces;
 
 public interface IUkrPoshtaClient
 {
-    Task<TResponse> PostAsync<TPayload, TResponse>(string controller, string method, TPayload payload, CancellationToken cancellationToken);
+    Task<UkrPoshtaCreateDeliveryResponseDto> CreateDeliveryAsync(CreateUkrPoshtaDeliveryPropertiesDto payload, CancellationToken cancellationToken);
 
-    Task<TResponse> GetAsync<TResponse>(string url, CancellationToken cancellationToken);
+    Task<UkrPoshtaTrackResponseDto> GetDeliveryDetailsAsync(string trackingNumber, CancellationToken cancellationToken);
 }

@@ -25,7 +25,9 @@ builder.Services
     .AddDeliveryClients()
     .AddDeliveryServices();
 
-builder.Services.AddSingleton<IExceptionHandler, GlobalExceptionHandler>();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IGoogleJsonWebSignatureWrapper, GoogleJsonWebSignatureWrapper>();
 
@@ -41,7 +43,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseGlobalExceptionHandler();
+app.UseExceptionHandler();
 
 app.UseAuthentication();
 app.UseAuthorization();

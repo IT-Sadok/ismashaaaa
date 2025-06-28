@@ -4,5 +4,5 @@ namespace MakeupClone.Infrastructure.Delivery.Clients.Interfaces;
 
 public interface INovaPoshtaClient
 {
-    Task<NovaPoshtaResponseDto<TData>> PostAsync<TPayload, TData>(NovaPoshtaRequestDto<TPayload> request, CancellationToken cancellationToken);
+    Task<NovaPoshtaResponseDto<TData>> SendRequestAsync<TPayload, TData>(NovaPoshtaRequestDto<TPayload> request, CancellationToken cancellationToken);
 }

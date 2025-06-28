@@ -1,11 +1,8 @@
-﻿using Flurl;
-using Flurl.Http;
-using MakeupClone.Application.DTOs.Delivery;
+﻿using MakeupClone.Application.DTOs.Delivery;
 using MakeupClone.Application.DTOs.Delivery.UkrPoshta;
 using MakeupClone.Application.Interfaces;
 using MakeupClone.Domain.Enums;
 using MakeupClone.Infrastructure.Delivery.Clients.Interfaces;
-using MakeupClone.Infrastructure.Delivery.Constants;
 using MakeupClone.Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 
@@ -28,7 +25,7 @@ public class UkrPoshtaProvider : IDeliveryProvider
     {
         var payload = BuildPayload(deliveryRequest);
 
-        var response = await _ukrPoshtaClient.PostAsync<CreateUkrPoshtaDeliveryPropertiesDto, UkrPoshtaCreateDeliveryResponseDto>(DeliveryApiConstants.BackofficeSegment, DeliveryApiConstants.ShipmentsSegment, payload, cancellationToken);
+        var response = await _ukrPoshtaClient.CreateDeliveryAsync(payload, cancellationToken);
 
         if (string.IsNullOrWhiteSpace(response.Barcode))
             throw new InvalidOperationException("Failed to receive barcode from UkrPoshta.");
@@ -38,10 +35,7 @@ public class UkrPoshtaProvider : IDeliveryProvider
 
     public async Task<DeliveryTrackingInformationDto> TrackDeliveryAsync(string trackingNumber, CancellationToken cancellationToken)
     {
-        var url = _options.ApiUrl
-            .AppendPathSegments(DeliveryApiConstants.BackofficeSegment, DeliveryApiConstants.ShipmentsSegment, trackingNumber, DeliveryApiConstants.TrackingSegment);
-
-        var response = await _ukrPoshtaClient.GetAsync<UkrPoshtaTrackResponseDto>(url, cancellationToken);
+        var response = await _ukrPoshtaClient.GetDeliveryDetailsAsync(trackingNumber, cancellationToken);
 
         return new DeliveryTrackingInformationDto
         {

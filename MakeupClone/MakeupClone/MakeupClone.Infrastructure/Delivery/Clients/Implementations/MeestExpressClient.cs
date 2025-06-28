@@ -1,5 +1,6 @@
 ﻿using Flurl;
 using Flurl.Http;
+using MakeupClone.Application.DTOs.Delivery.MeestExpress;
 using MakeupClone.Infrastructure.Delivery.Clients.Interfaces;
 using MakeupClone.Infrastructure.Delivery.Constants;
 using MakeupClone.Infrastructure.Settings;
@@ -16,25 +17,26 @@ public class MeestExpressClient : IMeestExpressClient
         _options = options.Value;
     }
 
-    public async Task<TResponse> PostAsync<TPayload, TResponse>(string controller, string method, TPayload payload, CancellationToken cancellationToken)
+    public async Task<CreateMeestDeliveryResponseDto> CreateDeliveryAsync(CreateMeestDeliveryRequestDto payload, CancellationToken cancellationToken)
     {
         var response = await _options.ApiUrl
-            .AppendPathSegments(controller, method)
+            .AppendPathSegments(DeliveryApiConstants.ApiSegment, DeliveryApiConstants.ShipmentsSegment)
             .WithHeader(DeliveryApiConstants.HeaderContentType, DeliveryApiConstants.ContentTypeJson)
             .WithHeader(DeliveryApiConstants.HeaderAuthorization, $"{DeliveryApiConstants.AuthorizationSchemeBearer}{_options.ApiKey}")
             .PostJsonAsync(payload, cancellationToken: cancellationToken)
-            .ReceiveJson<TResponse>();
+            .ReceiveJson<CreateMeestDeliveryResponseDto>();
 
         return response;
     }
 
-    public async Task<TResponse> GetAsync<TResponse>(string url, CancellationToken cancellationToken)
+    public async Task<TrackMeestDeliveryResponseDto> GetDeliveryDetailsAsync(string trackingNumber, CancellationToken cancellationToken)
     {
-        var response = await url
+        var url = _options.ApiUrl
+           .AppendPathSegments(DeliveryApiConstants.ApiSegment, DeliveryApiConstants.ShipmentsSegment, trackingNumber, DeliveryApiConstants.TrackingSegment);
+
+        return await url
             .WithHeader(DeliveryApiConstants.HeaderContentType, DeliveryApiConstants.ContentTypeJson)
             .WithHeader(DeliveryApiConstants.HeaderAuthorization, $"{DeliveryApiConstants.AuthorizationSchemeBearer}{_options.ApiKey}")
-            .GetJsonAsync<TResponse>(cancellationToken: cancellationToken);
-
-        return response;
+            .GetJsonAsync<TrackMeestDeliveryResponseDto>(cancellationToken: cancellationToken);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Flurl;
 using Flurl.Http;
+using MakeupClone.Application.DTOs.Delivery.UkrPoshta;
 using MakeupClone.Infrastructure.Delivery.Clients.Interfaces;
 using MakeupClone.Infrastructure.Delivery.Constants;
 using MakeupClone.Infrastructure.Settings;
@@ -16,25 +17,26 @@ public class UkrPoshtaClient : IUkrPoshtaClient
         _options = options.Value;
     }
 
-    public async Task<TResponse> PostAsync<TPayload, TResponse>(string controller, string method, TPayload payload, CancellationToken cancellationToken)
+    public async Task<UkrPoshtaCreateDeliveryResponseDto> CreateDeliveryAsync(CreateUkrPoshtaDeliveryPropertiesDto payload, CancellationToken cancellationToken)
     {
         var response = await _options.ApiUrl
-            .AppendPathSegments(controller, method)
+            .AppendPathSegments(DeliveryApiConstants.BackofficeSegment, DeliveryApiConstants.ShipmentsSegment)
             .WithHeader(DeliveryApiConstants.HeaderContentType, DeliveryApiConstants.ContentTypeJson)
             .WithHeader(DeliveryApiConstants.HeaderXApiKey, _options.ApiKey)
             .PostJsonAsync(payload, cancellationToken: cancellationToken)
-            .ReceiveJson<TResponse>();
+            .ReceiveJson<UkrPoshtaCreateDeliveryResponseDto>();
 
         return response;
     }
 
-    public async Task<TResponse> GetAsync<TResponse>(string url, CancellationToken cancellationToken)
+    public async Task<UkrPoshtaTrackResponseDto> GetDeliveryDetailsAsync(string trackingNumber, CancellationToken cancellationToken)
     {
-        var response = await url
+        var url = _options.ApiUrl
+            .AppendPathSegments(DeliveryApiConstants.BackofficeSegment, DeliveryApiConstants.ShipmentsSegment, trackingNumber, DeliveryApiConstants.TrackingSegment);
+
+        return await url
             .WithHeader(DeliveryApiConstants.HeaderContentType, DeliveryApiConstants.ContentTypeJson)
             .WithHeader(DeliveryApiConstants.HeaderXApiKey, _options.ApiKey)
-            .GetJsonAsync<TResponse>(cancellationToken: cancellationToken);
-
-        return response;
+            .GetJsonAsync<UkrPoshtaTrackResponseDto>(cancellationToken: cancellationToken);
     }
 }

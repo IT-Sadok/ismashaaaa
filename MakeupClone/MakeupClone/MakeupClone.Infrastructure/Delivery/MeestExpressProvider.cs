@@ -1,11 +1,8 @@
-﻿using Flurl;
-using Flurl.Http;
-using MakeupClone.Application.DTOs.Delivery;
+﻿using MakeupClone.Application.DTOs.Delivery;
 using MakeupClone.Application.DTOs.Delivery.MeestExpress;
 using MakeupClone.Application.Interfaces;
 using MakeupClone.Domain.Enums;
 using MakeupClone.Infrastructure.Delivery.Clients.Interfaces;
-using MakeupClone.Infrastructure.Delivery.Constants;
 using MakeupClone.Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 
@@ -28,7 +25,7 @@ public class MeestExpressProvider : IDeliveryProvider
     {
         var payload = BuildPayload(deliveryRequest);
 
-        var deliveryResponse = await _meestExpressClient.PostAsync<CreateMeestDeliveryRequestDto, CreateMeestDeliveryResponseDto>(DeliveryApiConstants.ApiSegment, DeliveryApiConstants.ShipmentsSegment, payload, cancellationToken);
+        var deliveryResponse = await _meestExpressClient.CreateDeliveryAsync(payload, cancellationToken);
 
         if (string.IsNullOrWhiteSpace(deliveryResponse.Barcode))
             throw new InvalidOperationException("Failed to receive barcode from Meest Express.");
@@ -38,10 +35,7 @@ public class MeestExpressProvider : IDeliveryProvider
 
     public async Task<DeliveryTrackingInformationDto> TrackDeliveryAsync(string trackingNumber, CancellationToken cancellationToken)
     {
-        var url = _options.ApiUrl
-            .AppendPathSegments(DeliveryApiConstants.ApiSegment, DeliveryApiConstants.ShipmentsSegment, trackingNumber, DeliveryApiConstants.TrackingSegment);
-
-        var deliveryResponse = await _meestExpressClient.GetAsync<TrackMeestDeliveryResponseDto>(url, cancellationToken);
+        var deliveryResponse = await _meestExpressClient.GetDeliveryDetailsAsync(trackingNumber, cancellationToken);
 
         return new DeliveryTrackingInformationDto
         {

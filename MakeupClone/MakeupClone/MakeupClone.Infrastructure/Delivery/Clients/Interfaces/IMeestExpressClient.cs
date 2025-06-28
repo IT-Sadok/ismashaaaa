@@ -1,8 +1,10 @@
-﻿namespace MakeupClone.Infrastructure.Delivery.Clients.Interfaces;
+﻿using MakeupClone.Application.DTOs.Delivery.MeestExpress;
+
+namespace MakeupClone.Infrastructure.Delivery.Clients.Interfaces;
 
 public interface IMeestExpressClient
 {
-    Task<TResponse> PostAsync<TPayload, TResponse>(string controller, string method, TPayload payload, CancellationToken cancellationToken);
+    Task<CreateMeestDeliveryResponseDto> CreateDeliveryAsync(CreateMeestDeliveryRequestDto payload, CancellationToken cancellationToken);
 
-    Task<TResponse> GetAsync<TResponse>(string url, CancellationToken cancellationToken);
+    Task<TrackMeestDeliveryResponseDto> GetDeliveryDetailsAsync(string trackingNumber, CancellationToken cancellationToken);
 }

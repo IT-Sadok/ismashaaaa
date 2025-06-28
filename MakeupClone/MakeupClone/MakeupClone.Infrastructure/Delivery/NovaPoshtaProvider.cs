@@ -53,7 +53,7 @@ public class NovaPoshtaProvider : IDeliveryProvider
             Description = deliveryRequest.Description
         });
 
-        var response = await _novaPoshtaClient.PostAsync<CreateInternetDocumentPropertiesDto, InternetDocumentDataDto>(payload, cancellationToken);
+        var response = await _novaPoshtaClient.SendRequestAsync<CreateInternetDocumentPropertiesDto, InternetDocumentDataDto>(payload, cancellationToken);
 
         var documentNumber = response.Data.FirstOrDefault()?.InternalDocumentNumber;
 
@@ -70,7 +70,7 @@ public class NovaPoshtaProvider : IDeliveryProvider
             Documents = new[] { new DocumentDto { DocumentNumber = trackingNumber } }
         });
 
-        var response = await _novaPoshtaClient.PostAsync<TrackingDocumentsPropertiesDto, TrackingDataDto>(payload, cancellationToken);
+        var response = await _novaPoshtaClient.SendRequestAsync<TrackingDocumentsPropertiesDto, TrackingDataDto>(payload, cancellationToken);
         var data = response.Data.FirstOrDefault()
             ?? throw new InvalidOperationException($"Tracking information not found for '{trackingNumber}'.");
 
@@ -89,7 +89,7 @@ public class NovaPoshtaProvider : IDeliveryProvider
             FindByString = cityName
         });
 
-        var response = await _novaPoshtaClient.PostAsync<CitySearchPropertiesDto, CityDataDto>(payload, cancellationToken);
+        var response = await _novaPoshtaClient.SendRequestAsync<CitySearchPropertiesDto, CityDataDto>(payload, cancellationToken);
         return response.Data.FirstOrDefault()?.CityReference;
     }
 
@@ -100,7 +100,7 @@ public class NovaPoshtaProvider : IDeliveryProvider
             CityRef = cityReference
         });
 
-        var response = await _novaPoshtaClient.PostAsync<WarehouseSearchPropertiesDto, WarehouseDataDto>(payload, cancellationToken);
+        var response = await _novaPoshtaClient.SendRequestAsync<WarehouseSearchPropertiesDto, WarehouseDataDto>(payload, cancellationToken);
 
         return response.Data
             .FirstOrDefault(warehouseDataDto => warehouseDataDto.Description.Contains(address, StringComparison.OrdinalIgnoreCase))

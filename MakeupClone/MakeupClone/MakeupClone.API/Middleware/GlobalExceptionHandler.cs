@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MakeupClone.API.Middleware;
 
@@ -14,7 +15,22 @@ public class GlobalExceptionHandler : IExceptionHandler
 
     public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken cancellationToken)
     {
-        var statusCode = exception switch
+        var statusCode = MapExceptionToStatusCode(exception);
+
+        _logger.LogError(exception, "Unhandled exception: {Message}", exception.Message);
+
+        var problemDetails = CreateProblemDetails(context, exception, statusCode);
+
+        context.Response.StatusCode = problemDetails.Status.Value;
+
+        await context.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
+
+        return true;
+    }
+
+    private static HttpStatusCode MapExceptionToStatusCode(Exception exception) =>
+
+        exception switch
         {
             KeyNotFoundException => HttpStatusCode.NotFound,
             UnauthorizedAccessException => HttpStatusCode.Unauthorized,
@@ -22,24 +38,12 @@ public class GlobalExceptionHandler : IExceptionHandler
             _ => HttpStatusCode.InternalServerError
         };
 
-        _logger.LogError(exception, "An unhandled exception occurred while processing the request.");
-
-        await CreateErrorResponseAsync(context, exception, statusCode, cancellationToken);
-
-        return true;
-    }
-
-    private static Task CreateErrorResponseAsync(HttpContext context, Exception exception, HttpStatusCode statusCode, CancellationToken cancellationToken)
-    {
-        context.Response.ContentType = "application/json";
-        context.Response.StatusCode = (int)statusCode;
-
-        var errorResponse = new
+    private static ProblemDetails CreateProblemDetails(HttpContext context, Exception exception, HttpStatusCode statusCode) =>
+        new ()
         {
-            exception.Message,
-            ErrorCode = statusCode.ToString()
+            Status = (int)statusCode,
+            Title = statusCode.ToString(),
+            Detail = exception.Message,
+            Instance = context.Request.Path
         };
-
-        return context.Response.WriteAsJsonAsync(errorResponse, cancellationToken);
-    }
 }

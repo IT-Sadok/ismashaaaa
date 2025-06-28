@@ -36,7 +36,7 @@ public static class OrderEndpoints
     private static async Task<IResult> CreateOrderAsync(IOrderProcessingService orderProcessingService, Order order, CancellationToken cancellationToken)
     {
         var orderId = await orderProcessingService.ProcessOrderAsync(order, cancellationToken);
-        return Results.Created($"/api/orders/{orderId}", new { Id = orderId });
+        return Results.Created($"{ApiRoutes.Orders.Base}/{orderId}", new { Id = orderId });
     }
 
     private static async Task<IResult> UpdateOrderAsync(IOrderService orderService, Order order, CancellationToken cancellationToken)

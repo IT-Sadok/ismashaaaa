@@ -15,7 +15,7 @@ public class NovaPoshtaClient : INovaPoshtaClient
         _options = options.Value;
     }
 
-    public async Task<NovaPoshtaResponseDto<TData>> PostAsync<TPayload, TData>(NovaPoshtaRequestDto<TPayload> request, CancellationToken cancellationToken)
+    public async Task<NovaPoshtaResponseDto<TData>> SendRequestAsync<TPayload, TData>(NovaPoshtaRequestDto<TPayload> request, CancellationToken cancellationToken)
     {
         var response = await _options.ApiUrl
             .WithHeader(DeliveryApiConstants.HeaderContentType, DeliveryApiConstants.ContentTypeJson)
