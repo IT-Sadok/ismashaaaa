@@ -1,5 +1,6 @@
 ﻿using MakeupClone.Application.Interfaces;
 using MakeupClone.Domain.Enums;
+using MakeupClone.Infrastructure.Payments.Constants;
 using MakeupClone.Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 using Stripe;
@@ -44,25 +45,25 @@ public class StripePaymentService : IPaymentService
         }
     }
 
-    public string GetProviderName() => "Stripe";
+    public string GetProviderName() => StripeConstants.ProviderName;
 
     private static string MapPaymentMethod(PaymentType paymentMethod) =>
         paymentMethod switch
         {
-            PaymentType.Visa => "card",
-            PaymentType.MasterCard => "card",
-            PaymentType.GooglePay => "card",
-            PaymentType.ApplePay => "card",
+            PaymentType.Visa => StripeConstants.PaymentMethodCard,
+            PaymentType.MasterCard => StripeConstants.PaymentMethodCard,
+            PaymentType.GooglePay => StripeConstants.PaymentMethodCard,
+            PaymentType.ApplePay => StripeConstants.PaymentMethodCard,
             _ => throw new ArgumentOutOfRangeException(nameof(paymentMethod), $"Unsupported payment method: {paymentMethod}")
         };
 
     private static PaymentStatus MapStripeStatusToPaymentStatus(string status) =>
         status switch
         {
-            "succeeded" => PaymentStatus.Completed,
-            "processing" => PaymentStatus.Pending,
-            "requires_payment_method" => PaymentStatus.Failed,
-            "canceled" => PaymentStatus.Failed,
+            StripeConstants.StatusSucceeded => PaymentStatus.Completed,
+            StripeConstants.StatusProcessing => PaymentStatus.Pending,
+            StripeConstants.StatusRequiresPaymentMethod => PaymentStatus.Failed,
+            StripeConstants.StatusCanceled => PaymentStatus.Failed,
             _ => PaymentStatus.Pending
         };
 

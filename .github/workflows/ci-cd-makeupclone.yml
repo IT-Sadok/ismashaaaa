@@ -1,0 +1,77 @@
+name: CI/CD MakeupClone
+
+on:
+  push:
+    branches:
+      - MakeupClone
+    paths:
+      - 'MakeupClone/**'
+  workflow_dispatch:
+
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build:
+    name: Build, Test, and Package MakeupClone
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore MakeupClone.sln
+
+    - name: Check code formatting
+      run: dotnet format --verify-no-changes --severity warn || true
+
+    - name: Build solution
+      run: dotnet build MakeupClone.sln --configuration Release --no-restore
+
+    - name: Run tests with logs
+      run: dotnet test MakeupClone.sln --configuration Release --no-build --logger "trx;LogFileName=test-results.trx"
+
+    - name: Upload test results (if any)
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: '**/*.trx'
+
+    - name: Publish API
+      run: dotnet publish MakeupClone/MakeupClone/MakeupClone.API/MakeupClone.API.csproj -c Release -o ./publish
+
+    - name: Upload published artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: makeupclone-publish
+        path: ./publish
+
+  deploy:
+    name: Deploy MakeupClone to Azure
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: build
+    environment:
+      name: production
+
+    steps:
+    - name: Download published artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: makeupclone-publish
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: makeupclone-demo
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: .
