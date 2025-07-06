@@ -5,7 +5,6 @@ using MakeupClone.Application.Interfaces;
 using MakeupClone.Infrastructure.Data.MappingProfiles;
 using MakeupClone.Infrastructure.Extensions;
 using MakeupClone.Infrastructure.Secutiry;
-using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
