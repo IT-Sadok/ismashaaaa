@@ -29,16 +29,16 @@ jobs:
         dotnet-version: '8.0.x'
 
     - name: Restore dependencies
-      run: dotnet restore MakeupClone.sln
+      run: dotnet restore MakeupClone/MakeupClone/MakeupClone.sln
 
     - name: Check code formatting
       run: dotnet format --verify-no-changes --severity warn || true
 
     - name: Build solution
-      run: dotnet build MakeupClone.sln --configuration Release --no-restore
+      run: dotnet build MakeupClone/MakeupClone/MakeupClone.sln --configuration Release --no-restore
 
     - name: Run tests with logs
-      run: dotnet test MakeupClone.sln --configuration Release --no-build --logger "trx;LogFileName=test-results.trx"
+      run: dotnet test MakeupClone/MakeupClone/MakeupClone.sln --configuration Release --no-build --logger "trx;LogFileName=test-results.trx"
 
     - name: Upload test results (if any)
       uses: actions/upload-artifact@v4
