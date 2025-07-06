@@ -47,7 +47,7 @@ public static class ApiRoutes
 
     public static class Orders
     {
-        public const string Base = "api/orders";
+        public const string Base = "/api/orders";
         public const string GetById = ById;
         public const string GetAll = Root;
         public const string Create = Root;

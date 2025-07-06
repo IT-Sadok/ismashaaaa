@@ -69,7 +69,7 @@ namespace MakeupClone.Infrastructure.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
 
-                    b.Property<string>("PhoneNumber")
+                    b.Property<string>("SendersPhoneNumber")
                         .HasColumnType("text");
 
                     b.Property<bool>("PhoneNumberConfirmed")
@@ -130,6 +130,51 @@ namespace MakeupClone.Infrastructure.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("MakeupClone.Infrastructure.Data.Entities.DeliveryInformationEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("DeliveryMethod")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SendersPhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Region")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TrackingNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("Deliveries");
+                });
+
             modelBuilder.Entity("MakeupClone.Infrastructure.Data.Entities.OrderEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -139,15 +184,26 @@ namespace MakeupClone.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid?>("DeliveryInformationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("PaymentInformationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DeliveryInformationId")
+                        .IsUnique();
+
+                    b.HasIndex("PaymentInformationId")
+                        .IsUnique();
 
                     b.HasIndex("UserId");
 
@@ -176,6 +232,42 @@ namespace MakeupClone.Infrastructure.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("Items");
+                });
+
+            modelBuilder.Entity("MakeupClone.Infrastructure.Data.Entities.PaymentInformationEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Method")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("PaidAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Provider")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TransactionId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("MakeupClone.Infrastructure.Data.Entities.ProductEntity", b =>
@@ -385,13 +477,38 @@ namespace MakeupClone.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("MakeupClone.Infrastructure.Data.Entities.DeliveryInformationEntity", b =>
+                {
+                    b.HasOne("MakeupClone.Infrastructure.Data.Entities.OrderEntity", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("MakeupClone.Infrastructure.Data.Entities.OrderEntity", b =>
                 {
+                    b.HasOne("MakeupClone.Infrastructure.Data.Entities.DeliveryInformationEntity", "DeliveryInformation")
+                        .WithOne()
+                        .HasForeignKey("MakeupClone.Infrastructure.Data.Entities.OrderEntity", "DeliveryInformationId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("MakeupClone.Infrastructure.Data.Entities.PaymentInformationEntity", "PaymentInformation")
+                        .WithOne()
+                        .HasForeignKey("MakeupClone.Infrastructure.Data.Entities.OrderEntity", "PaymentInformationId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("MakeupClone.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("DeliveryInformation");
+
+                    b.Navigation("PaymentInformation");
 
                     b.Navigation("User");
                 });
@@ -413,6 +530,17 @@ namespace MakeupClone.Infrastructure.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("MakeupClone.Infrastructure.Data.Entities.PaymentInformationEntity", b =>
+                {
+                    b.HasOne("MakeupClone.Infrastructure.Data.Entities.OrderEntity", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("MakeupClone.Infrastructure.Data.Entities.ProductEntity", b =>

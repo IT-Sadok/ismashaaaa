@@ -1,9 +1,11 @@
 using MakeupClone.API.Endpoints;
+using MakeupClone.API.Middleware;
 using MakeupClone.Application.Extensions;
 using MakeupClone.Application.Interfaces;
 using MakeupClone.Infrastructure.Data.MappingProfiles;
 using MakeupClone.Infrastructure.Extensions;
 using MakeupClone.Infrastructure.Secutiry;
+using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +20,13 @@ builder.Services
     .AddAuthorizationPolicies()
     .AddValidation()
     .AddRepositories()
-    .AddServices();
+    .AddServices()
+    .AddPaymentServices()
+    .AddDeliveryClients()
+    .AddDeliveryServices();
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 builder.Services.AddScoped<IGoogleJsonWebSignatureWrapper, GoogleJsonWebSignatureWrapper>();
@@ -34,6 +42,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseExceptionHandler();
 
 app.UseAuthentication();
 app.UseAuthorization();
