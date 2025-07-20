@@ -31,6 +31,12 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore MakeupClone/MakeupClone/MakeupClone.sln
 
+    - name: Add test appsettings.Test.json
+      run: |
+          mkdir -p MakeupClone/MakeupClone/MakeupClone.Tests
+          echo '{}' > MakeupClone/MakeupClone/MakeupClone.Tests/appsettings.Test.json
+
+
     - name: Check code formatting
       run: dotnet format --verify-no-changes --severity warn || true
 
