@@ -40,8 +40,8 @@ jobs:
     - name: Run tests with logs
       env:
          ASPNETCORE_ENVIRONMENT: Test
-         ConnectionStrings__MakeupCloneTestDb: ${{ secrets.CONNECTIONSTRINGS__MAKEUPCLONETESTDB }}
-         Stripe__SecretKey: ${{ secrets.STRIPE__SECRETKEY }}
+         ConnectionStrings__MakeupCloneTestDb: ${{ secrets.CONNECTIONSTRINGS_MAKEUPCLONETESTDB }}
+         Stripe__SecretKey: ${{ secrets.STRIPE_SECRETKEY }}
          Stripe__PublicKey: ${{ secrets.STRIPE_PUBLICKEY }}
          NovaPoshta__ApiUrl: ${{ secrets.NOVAPOSHTA_APIURL }}
          NovaPoshta__ApiKey: ${{ secrets.NOVAPOSHTA_APIKEY }}
@@ -52,9 +52,9 @@ jobs:
          UkrPoshta__ApiUrl: ${{ secrets.UKRPOSHTA_APIURL }}
          UkrPoshta__ApiKey: ${{ secrets.UKRPOSHTA_APIKEY }}
          UkrPoshta__SenderAddressId: ${{ secrets.UKRPOSHTA_SENDERADDRESSID }}
-         MeestExpress__ApiUrl: ${{ secrets.MEESTEXPRESS__APIURL }}
-         MeestExpress__ApiKey: ${{ secrets.MEESTEXPRESS__APIKEY }}
-         MeestExpress__SenderCode: ${{ secrets.MEESTEXPRESS__SENDERCODE }}
+         MeestExpress__ApiUrl: ${{ secrets.MEESTEXPRESS_APIURL }}
+         MeestExpress__ApiKey: ${{ secrets.MEESTEXPRESS_APIKEY }}
+         MeestExpress__SenderCode: ${{ secrets.MEESTEXPRESS_SENDERCODE }}
       run: dotnet test MakeupClone/MakeupClone/MakeupClone.sln --configuration Release --no-build --logger "trx;LogFileName=test-results.trx"
       continue-on-error: true
 
