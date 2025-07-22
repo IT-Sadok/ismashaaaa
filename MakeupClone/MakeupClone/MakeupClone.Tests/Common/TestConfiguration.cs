@@ -8,7 +8,8 @@ public static class TestConfiguration
 
     public static IConfiguration Configuration => _configuration ??= new ConfigurationBuilder()
         .SetBasePath(AppContext.BaseDirectory)
-        .AddJsonFile("appsettings.Test.json")
+        .AddEnvironmentVariables()
+        .AddJsonFile("appsettings.Test.json", optional: true)
         .Build();
 
     public static string ConnectionString => Configuration.GetConnectionString("MakeupCloneTestDb") !;

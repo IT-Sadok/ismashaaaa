@@ -91,7 +91,6 @@ public static class TestServiceProviderFactory
         };
 
         IConfiguration configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.Test.json", optional: false)
             .AddInMemoryCollection(inMemorySettings)
             .Build();
 
