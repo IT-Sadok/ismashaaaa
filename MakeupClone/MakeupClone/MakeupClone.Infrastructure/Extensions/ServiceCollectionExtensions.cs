@@ -1,5 +1,4 @@
 ﻿using System.Text;
-
 using MakeupClone.Application.Interfaces;
 using MakeupClone.Application.Services;
 using MakeupClone.Domain.Entities;
@@ -46,7 +45,7 @@ public static class ServiceCollectionExtensions
         var jwtSettings = configuration.GetSection("Jwt");
         var googleSettings = configuration.GetSection("Google");
 
-        var key = Convert.FromBase64String(jwtSettings["Key"] !);
+        var key = Encoding.UTF8.GetBytes(jwtSettings["Key"] !);
 
         services.AddAuthentication(options =>
         {
