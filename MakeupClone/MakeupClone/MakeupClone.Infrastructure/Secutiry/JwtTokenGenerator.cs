@@ -18,7 +18,7 @@ public class JwtTokenGenerator : IJwtTokenGenerator
 
     public string GenerateToken(string userId, string email)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] !));
+        var key = new SymmetricSecurityKey(Convert.FromBase64String(_configuration["Jwt:Key"] !));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var claims = new[]

@@ -46,7 +46,7 @@ public static class ServiceCollectionExtensions
         var jwtSettings = configuration.GetSection("Jwt");
         var googleSettings = configuration.GetSection("Google");
 
-        var key = Encoding.UTF8.GetBytes(jwtSettings["Key"] !);
+        var key = Convert.FromBase64String(jwtSettings["Key"] !);
 
         services.AddAuthentication(options =>
         {
