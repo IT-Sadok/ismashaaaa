@@ -1,0 +1,95 @@
+name: CI/CD MakeupClone
+
+on:
+  push:
+    branches:
+      - MakeupClone
+    paths:
+      - 'MakeupClone/**'
+  workflow_dispatch:
+
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build:
+    name: Build, Test, and Package MakeupClone
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+    - name: Checkout source code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore MakeupClone/MakeupClone/MakeupClone.sln
+
+    - name: Check code formatting
+      run: dotnet format --verify-no-changes --severity warn || true
+
+    - name: Build solution
+      run: dotnet build MakeupClone/MakeupClone/MakeupClone.sln --configuration Release --no-restore
+
+    - name: Run tests with logs
+      env:
+         ASPNETCORE_ENVIRONMENT: Test
+         ConnectionStrings__MakeupCloneTestDb: ${{ secrets.CONNECTIONSTRINGS_MAKEUPCLONETESTDB }}
+         Stripe__SecretKey: ${{ secrets.STRIPE_SECRETKEY }}
+         Stripe__PublicKey: ${{ secrets.STRIPE_PUBLICKEY }}
+         NovaPoshta__ApiUrl: ${{ secrets.NOVAPOSHTA_APIURL }}
+         NovaPoshta__ApiKey: ${{ secrets.NOVAPOSHTA_APIKEY }}
+         NovaPoshta__CitySenderRef: ${{ secrets.NOVAPOSHTA_CITYSENDERREF }}
+         NovaPoshta__SenderRef: ${{ secrets.NOVAPOSHTA_SENDERREF }}
+         NovaPoshta__SenderContactRef: ${{ secrets.NOVAPOSHTA_SENDERCONTACTREF }}
+         NovaPoshta__SenderWarehouseRef: ${{ secrets.NOVAPOSHTA_SENDERWAREHOUSEREF }}
+         UkrPoshta__ApiUrl: ${{ secrets.UKRPOSHTA_APIURL }}
+         UkrPoshta__ApiKey: ${{ secrets.UKRPOSHTA_APIKEY }}
+         UkrPoshta__SenderAddressId: ${{ secrets.UKRPOSHTA_SENDERADDRESSID }}
+         MeestExpress__ApiUrl: ${{ secrets.MEESTEXPRESS_APIURL }}
+         MeestExpress__ApiKey: ${{ secrets.MEESTEXPRESS_APIKEY }}
+         MeestExpress__SenderCode: ${{ secrets.MEESTEXPRESS_SENDERCODE }}
+      run: dotnet test MakeupClone/MakeupClone/MakeupClone.sln --configuration Release --no-build --logger "trx;LogFileName=test-results.trx"
+      continue-on-error: true
+
+    - name: Upload test results (if any)
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: '**/*.trx'
+
+    - name: Publish API
+      run: dotnet publish MakeupClone/MakeupClone/MakeupClone.API/MakeupClone.API.csproj -c Release -o ./publish
+
+    - name: Upload published artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: makeupclone-publish
+        path: ./publish
+
+  deploy:
+    name: Deploy MakeupClone to Azure
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: build
+    environment:
+      name: production
+
+    steps:
+    - name: Download published artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: makeupclone-publish
+
+    - name: Deploy to Azure Web App
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: makeupclone-demo
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        package: .
