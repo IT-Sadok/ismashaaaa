@@ -8,6 +8,8 @@ using MakeupClone.Infrastructure.Secutiry;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddEnvironmentVariables();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -34,11 +36,14 @@ builder.Services.AddAutoMapper(typeof(ProductMappingProfile).Assembly);
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+app.UseStaticFiles();
+
+app.UseSwagger();
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+    options.RoutePrefix = string.Empty;
+});
 
 app.UseHttpsRedirection();
 
